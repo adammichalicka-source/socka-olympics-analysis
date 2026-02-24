@@ -107,9 +107,12 @@ else:
     ylabel = "Medaily / 1 milión € investícií"
 
 # 8) Graf
+# 8) Graf
 st.subheader("📊 Graf")
 
-# Top N (aby graf nebol preplnený)
+import numpy as np
+
+# Top N
 count = len(filtered)
 max_n = max(1, min(25, count))
 default_n = min(10, count)
@@ -121,34 +124,34 @@ top_n = st.slider(
     value=default_n,
 )
 
-# priprav chart_df podľa metriky (a tiež zoradenie)
+# Zoradenie podľa vybranej metriky
 chart_df = filtered.copy()
 
-if metric == "Total medals":
+if metric == "🏅 Počet medailí (spolu)":
     chart_df = chart_df.sort_values("total", ascending=False)
-elif metric == "Points (3-2-1)":
+elif metric == "⭐ Body (3-2-1)":
     chart_df = chart_df.sort_values("points", ascending=False)
-elif metric == "Medals per 1M population":
+elif metric == "📊 Medaily na 1 milión obyvateľov":
     chart_df = chart_df.dropna(subset=["medals_per_million"]).sort_values("medals_per_million", ascending=False)
-else:
+else:  # "💶 Medaily na 1 milión € investícií"
     chart_df = chart_df.dropna(subset=["medals_per_invest"]).sort_values("medals_per_invest", ascending=False)
 
 chart_df = chart_df.head(top_n)
 
-import numpy as np
 plt.figure(figsize=(10, 5))
 ax = plt.gca()
 
-# --- 1) Ak je metrika Total medals, tak zmysel dáva stacked/grouped podľa typov medailí ---
-if metric == "Total medals":
-    if chart_type == "Stacked (zlato+striebro+bronz)":
-        ax.bar(chart_df["country"], chart_df["gold"], label="🥇Zlaté", color="#FFD700")
-        ax.bar(chart_df["country"], chart_df["silver"], bottom=chart_df["gold"], label="🥈Strieborné", color="#C0C0C0")
+# --- A) Medaily spolu: môžeme stacked / grouped ---
+if metric == "🏅 Počet medailí (spolu)":
+
+    if chart_type == "Skladaný (🥇🥈🥉 spolu)":
+        ax.bar(chart_df["country"], chart_df["gold"], label="🥇 Zlaté", color="#FFD700")
+        ax.bar(chart_df["country"], chart_df["silver"], bottom=chart_df["gold"], label="🥈 Strieborné", color="#C0C0C0")
         ax.bar(
             chart_df["country"],
             chart_df["bronze"],
             bottom=chart_df["gold"] + chart_df["silver"],
-            label="🥉Bronzové",
+            label="🥉 Bronzové",
             color="#CD7F32"
         )
 
@@ -158,37 +161,39 @@ if metric == "Total medals":
             s = int(chart_df.iloc[i]["silver"])
             b = int(chart_df.iloc[i]["bronze"])
             t = int(chart_df.iloc[i]["total"])
+
             if g > 0: ax.text(i, g/2, str(g), ha="center", va="center", fontsize=9)
             if s > 0: ax.text(i, g + s/2, str(s), ha="center", va="center", fontsize=9)
             if b > 0: ax.text(i, g + s + b/2, str(b), ha="center", va="center", fontsize=9)
+
             ax.text(i, t + 0.3, str(t), ha="center", va="bottom", fontsize=10, fontweight="bold")
 
         plt.xticks(rotation=35, ha="right")
 
-    else:
+    else:  # Skupinový
         x = np.arange(len(chart_df))
         w = 0.25
-        ax.bar(x - w, chart_df["gold"], w, label="🥇", color="#FFD700")
-        ax.bar(x,     chart_df["silver"], w, label="🥈", color="#C0C0C0")
-        ax.bar(x + w, chart_df["bronze"], w, label="🥉", color="#CD7F32")
+
+        ax.bar(x - w, chart_df["gold"], w, label="🥇 Zlaté", color="#FFD700")
+        ax.bar(x,     chart_df["silver"], w, label="🥈 Strieborné", color="#C0C0C0")
+        ax.bar(x + w, chart_df["bronze"], w, label="🥉 Bronzové", color="#CD7F32")
 
         ax.set_xticks(x)
         ax.set_xticklabels(chart_df["country"], rotation=35, ha="right")
 
-        # total nad skupinou
         for i in range(len(chart_df)):
             t = int(chart_df.iloc[i]["total"])
             ax.text(i, t + 0.3, str(t), ha="center", va="bottom", fontsize=10, fontweight="bold")
 
     ax.set_ylabel("Počet medailí", fontsize=11)
 
-# --- 2) Iné metriky: kreslíme len 1 stĺpec na krajinu ---
+# --- B) Ostatné metriky: 1 stĺpec na krajinu ---
 else:
-    if metric == "Points (3-2-1)":
+    if metric == "⭐ Body (3-2-1)":
         y = chart_df["points"]
         ylabel = "Body"
         fmt = "{:.0f}"
-    elif metric == "Medals per 1M population":
+    elif metric == "📊 Medaily na 1 milión obyvateľov":
         y = chart_df["medals_per_million"]
         ylabel = "Medaily / 1 milión obyvateľov"
         fmt = "{:.3f}"
@@ -201,21 +206,17 @@ else:
     plt.xticks(rotation=35, ha="right")
     ax.set_ylabel(ylabel, fontsize=11)
 
-    # čísla nad stĺpcami
+    # hodnoty nad stĺpcami
     y_max = float(y.max()) if len(y) else 0
     pad = y_max * 0.02 if y_max > 0 else 0.1
     for i, val in enumerate(y.tolist()):
         ax.text(i, float(val) + pad, fmt.format(float(val)), ha="center", va="bottom", fontsize=9)
 
-# Čistý vzhľad
+# štýl
 ax.set_axisbelow(True)
 ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-
-# titul iba cez streamlit (nech nezavadzia hore)
-# ax.set_title(... )  <-- nedávame
-
 ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
 plt.tight_layout()
