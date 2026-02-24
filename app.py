@@ -160,7 +160,7 @@ ax.set_ylabel("Počet medailí", fontsize=11)
 
 # Ak máš športový režim, dá title podľa športu. Ak nie, bude všeobecný.
 title = "Rozdelenie medailí podľa typu" if "selected_sport" not in globals() or selected_sport is None else f"Rozdelenie medailí – {selected_sport}"
-ax.set_title(title, fontsize=13, pad=12)
+
 
 plt.xticks(rotation=35, ha="right")
 
@@ -207,6 +207,7 @@ if "📈 Medaily na 1 milión USD" in table_df.columns:
 table_df = table_df.reset_index(drop=True)
 
 st.dataframe(table_df, use_container_width=True)
+
 
 
 
