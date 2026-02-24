@@ -93,6 +93,7 @@ else:
 # 8) Graf
 st.subheader("📊 Graf – rozdelenie medailí (🥇🥈🥉)")
 
+# Top N (aby graf nebol preplnený)
 count = len(filtered)
 max_n = max(3, min(25, count))   # aby max nebolo menšie než 3
 default_n = min(10, count)       # default nemôže byť väčší než počet krajín
@@ -103,7 +104,9 @@ top_n = st.slider(
     max_value=max_n,
     value=default_n,
 )
+
 chart_df = filtered.sort_values("total", ascending=False).head(top_n)
+
 # Figure + axis (profi ovládanie štýlu)
 plt.figure(figsize=(10, 5))
 ax = plt.gca()
@@ -124,6 +127,27 @@ ax.bar(
     label="Bronze",
     color="#CD7F32",
 )
+for i in range(len(chart_df)):
+
+    gold = chart_df.iloc[i]["gold"]
+    silver = chart_df.iloc[i]["silver"]
+    bronze = chart_df.iloc[i]["bronze"]
+    total = chart_df.iloc[i]["total"]
+
+    # Zlaté číslo
+    if gold > 0:
+        ax.text(i, gold/2, str(int(gold)), ha="center", va="center", fontsize=9)
+
+    # Strieborné číslo
+    if silver > 0:
+        ax.text(i, gold + silver/2, str(int(silver)), ha="center", va="center", fontsize=9)
+
+    # Bronzové číslo
+    if bronze > 0:
+        ax.text(i, gold + silver + bronze/2, str(int(bronze)), ha="center", va="center", fontsize=9)
+
+    # Celkový počet nad stĺpcom
+    ax.text(i, total + 0.3, str(int(total)), ha="center", va="bottom", fontsize=10, fontweight="bold")
 
 # Čistý "dashboard" look
 ax.set_axisbelow(True)
@@ -183,5 +207,6 @@ if "📈 Medaily na 1 milión USD" in table_df.columns:
 table_df = table_df.reset_index(drop=True)
 
 st.dataframe(table_df, use_container_width=True)
+
 
 
