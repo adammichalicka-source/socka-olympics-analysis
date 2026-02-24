@@ -217,7 +217,7 @@ ax.set_axisbelow(True)
 ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
+ax.legend(frameon=False, ncol=3, loc="upper left")
 
 plt.tight_layout()
 st.pyplot(plt)
