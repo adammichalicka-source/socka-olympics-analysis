@@ -69,8 +69,9 @@ default = [c for c in ["United States", "China", "Slovakia"] if c in all_countri
 chosen = st.multiselect("Vyber krajiny na porovnanie:", all_countries, default=default)
 chart_type = st.selectbox(
     "Typ grafu:",
-    ["Stacked (zlato+striebro+bronz)", "Grouped (3 vedľa seba)"]
+    ["Skladaný (🥇🥈🥉 spolu)", "Skupinový (🥇🥈🥉 vedľa seba)"]
 )
+
 if not chosen:
     st.warning("Vyber aspoň jednu krajinu.")
     st.stop()
@@ -79,26 +80,31 @@ filtered = data[data["country"].isin(chosen)].copy()
 
 # 6) UI – výber metriky
 metric = st.selectbox(
-    "Vyber metriky porovnania:",
-    ["Total medals", "Points (3-2-1)", "Medals per 1M population", "Medals per 1M USD sport invest"]
+    "Vyber metriku porovnania:",
+    [
+        "🏅 Počet medailí (spolu)",
+        "⭐ Body (3-2-1)",
+        "📊 Medaily na 1 milión obyvateľov",
+        "💶 Medaily na 1 milión € investícií",
+    ]
 )
 
+
 # 7) Priprav hodnoty pre graf
-if metric == "Total medals":
+if metric == "🏅 Počet medailí (spolu)":
     y = filtered["total"]
     ylabel = "Počet medailí"
-elif metric == "Points (3-2-1)":
+elif metric == "⭐ Body (3-2-1)":
     y = filtered["points"]
     ylabel = "Body"
-elif metric == "Medals per 1M population":
-    # Ak niekto nemá populáciu, vyhodíme ho z grafu
+elif metric == "📊 Medaily na 1 milión obyvateľov":
     filtered = filtered.dropna(subset=["population"])
     y = filtered["medals_per_million"]
     ylabel = "Medaily / 1 milión obyvateľov"
 else:
     filtered = filtered.dropna(subset=["sport_invest"])
     y = filtered["medals_per_invest"]
-    ylabel = "Medaily / 1 milión USD investícií"
+    ylabel = "Medaily / 1 milión € investícií"
 
 # 8) Graf
 st.subheader("📊 Graf")
@@ -136,13 +142,13 @@ ax = plt.gca()
 # --- 1) Ak je metrika Total medals, tak zmysel dáva stacked/grouped podľa typov medailí ---
 if metric == "Total medals":
     if chart_type == "Stacked (zlato+striebro+bronz)":
-        ax.bar(chart_df["country"], chart_df["gold"], label="🥇", color="#FFD700")
-        ax.bar(chart_df["country"], chart_df["silver"], bottom=chart_df["gold"], label="🥈", color="#C0C0C0")
+        ax.bar(chart_df["country"], chart_df["gold"], label="🥇Zlaté", color="#FFD700")
+        ax.bar(chart_df["country"], chart_df["silver"], bottom=chart_df["gold"], label="🥈Strieborné", color="#C0C0C0")
         ax.bar(
             chart_df["country"],
             chart_df["bronze"],
             bottom=chart_df["gold"] + chart_df["silver"],
-            label="🥉",
+            label="🥉Bronzové",
             color="#CD7F32"
         )
 
