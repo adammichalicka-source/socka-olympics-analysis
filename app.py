@@ -138,8 +138,8 @@ else:  # "💶 Medaily na 1 milión € investícií"
 
 chart_df = chart_df.head(top_n)
 
-plt.figure(figsize=(10, 5))
-ax = plt.gca()
+fig, ax = plt.subplots(figsize=(10, 5), constrained_layout=True)
+st.pyplot(fig, clear_figure=True)
 
 # --- A) Medaily spolu: môžeme stacked / grouped ---
 if metric == "🏅 Počet medailí (spolu)":
