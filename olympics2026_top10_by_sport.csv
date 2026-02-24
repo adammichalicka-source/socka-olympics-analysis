@@ -1,1 +1,44 @@
+sport,country,gold,silver,bronze,total
+Skiing,Norway,6,3,2,11
+Skiing,United States,2,2,1,5
+Skiing,Italy,2,1,2,5
+Skiing,Germany,2,2,1,5
+Skiing,France,2,2,2,6
+Skiing,Switzerland,2,2,2,6
+Skiing,Canada,1,1,2,4
+Skiing,Netherlands,0,1,0,1
+Skiing,Sweden,1,1,1,3
+Skiing,Austria,1,2,1,4
 
+Skating,Netherlands,7,2,1,10
+Skating,Norway,2,2,2,6
+Skating,United States,2,2,1,5
+Skating,Italy,1,1,2,4
+Skating,Germany,1,2,1,4
+Skating,France,1,1,1,3
+Skating,Switzerland,0,1,0,1
+Skating,Canada,1,1,1,3
+Skating,Sweden,1,1,1,3
+Skating,Austria,0,1,1,2
+
+Biathlon,Norway,4,3,2,9
+Biathlon,Germany,2,3,2,7
+Biathlon,France,2,2,2,6
+Biathlon,Italy,1,1,2,4
+Biathlon,Sweden,1,1,1,3
+Biathlon,Switzerland,1,1,1,3
+Biathlon,Austria,1,2,1,4
+Biathlon,United States,0,1,1,2
+Biathlon,Canada,0,0,1,1
+Biathlon,Netherlands,0,0,0,0
+
+Ice Hockey,Canada,1,0,1,2
+Ice Hockey,United States,1,1,0,2
+Ice Hockey,Sweden,0,1,1,2
+Ice Hockey,Germany,0,1,0,1
+Ice Hockey,Finland,0,1,0,1
+Ice Hockey,Switzerland,0,0,1,1
+Ice Hockey,Italy,0,0,0,0
+Ice Hockey,Norway,0,0,0,0
+Ice Hockey,Netherlands,0,0,0,0
+Ice Hockey,Austria,0,0,0,0
