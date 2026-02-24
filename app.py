@@ -93,22 +93,60 @@ else:
 # 8) Graf
 st.subheader("📊 Graf – rozdelenie medailí (🥇🥈🥉)")
 
+# Top N (aby graf nebol preplnený)
+top_n = st.slider(
+    "Koľko krajín zobraziť (Top N):",
+    min_value=3,
+    max_value=min(25, len(filtered)),
+    value=min(10, len(filtered)),
+)
 
-chart_df = filtered.sort_values("total", ascending=False)
+chart_df = filtered.sort_values("total", ascending=False).head(top_n)
 
-plt.figure()
+# Figure + axis (profi ovládanie štýlu)
+plt.figure(figsize=(10, 5))
+ax = plt.gca()
 
-plt.bar(chart_df["country"], chart_df["gold"], label="Gold" , color="#FFD700")
-plt.bar(chart_df["country"], chart_df["silver"], bottom=chart_df["gold"], label="Silver", color="#C0C0C0")
-plt.bar(chart_df["country"], chart_df["bronze"], bottom=chart_df["gold"] + chart_df["silver"], label="Bronze", color="#CD7F32")
-plt.bar
- 
+# Stacked stĺpce
+ax.bar(chart_df["country"], chart_df["gold"], label="Gold", color="#FFD700")
+ax.bar(
+    chart_df["country"],
+    chart_df["silver"],
+    bottom=chart_df["gold"],
+    label="Silver",
+    color="#C0C0C0",
+)
+ax.bar(
+    chart_df["country"],
+    chart_df["bronze"],
+    bottom=chart_df["gold"] + chart_df["silver"],
+    label="Bronze",
+    color="#CD7F32",
+)
 
-plt.xticks(rotation=45, ha="right")
-plt.ylabel("Počet medailí")
-plt.title("Rozdelenie medailí podľa typu")
-plt.legend()
+# Čistý "dashboard" look
+ax.set_axisbelow(True)
+ax.yaxis.grid(True, alpha=0.25)     # jemná mriežka
+ax.spines["top"].set_visible(False) # odstráni rámik hore
+ax.spines["right"].set_visible(False) # odstráni rámik vpravo
 
+# Popisy
+ax.set_ylabel("Počet medailí", fontsize=11)
+
+# Ak máš športový režim, dá title podľa športu. Ak nie, bude všeobecný.
+title = "Rozdelenie medailí podľa typu" if "selected_sport" not in globals() or selected_sport is None else f"Rozdelenie medailí – {selected_sport}"
+ax.set_title(title, fontsize=13, pad=12)
+
+plt.xticks(rotation=35, ha="right")
+
+# Legenda hore (vyzerá moderne)
+ax.legend(ncol=3, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.12))
+
+# Čísla nad stĺpcami (total)
+for i, total in enumerate(chart_df["total"].tolist()):
+    ax.text(i, total + 0.2, str(int(total)), ha="center", va="bottom", fontsize=10)
+
+plt.tight_layout()
 st.pyplot(plt)
 # 9) Tabuľka výsledkov
 st.subheader("📋 Tabuľka (vybrané krajiny)")
@@ -116,3 +154,4 @@ cols = ["country", "gold", "silver", "bronze", "total", "points", "population", 
 st.dataframe(filtered[cols].sort_values(by="points", ascending=False), use_container_width=True)
 
 st.caption("Pozn.: 'sport_invest' sú odhadované ročné investície do športu (v miliónoch USD) – vhodné pre porovnávaciu analýzu v SOČ.")
+
