@@ -150,10 +150,38 @@ for i, total in enumerate(chart_df["total"].tolist()):
 plt.tight_layout()
 st.pyplot(plt)
 # 9) Tabuľka výsledkov
-st.subheader("📋 Tabuľka (vybrané krajiny)")
-cols = ["country", "gold", "silver", "bronze", "total", "points", "population", "sport_invest", "medals_per_million", "medals_per_invest"]
-st.dataframe(filtered[cols].sort_values(by="points", ascending=False), use_container_width=True)
+st.subheader("📋 Analytická tabuľka")
 
-st.caption("Pozn.: 'sport_invest' sú odhadované ročné investície do športu (v miliónoch USD) – vhodné pre porovnávaciu analýzu v SOČ.")
+table_df = chart_df.copy()
+
+# Preklad názvov stĺpcov
+rename_columns = {
+    "country": "Krajina",
+    "gold": "🥇 Zlaté medaily",
+    "silver": "🥈 Strieborné medaily",
+    "bronze": "🥉 Bronzové medaily",
+    "total": "🏅 Spolu medailí",
+    "points": "⭐ Body (3-2-1)",
+    "population": "👥 Populácia",
+    "sport_invest": "💰 Investície do športu (mil. USD)",
+    "medals_per_million": "📊 Medaily na 1 milión obyv.",
+    "medals_per_invest": "📈 Medaily na 1 milión USD"
+}
+
+# Premenuj iba tie, ktoré existujú
+existing_cols = {k: v for k, v in rename_columns.items() if k in table_df.columns}
+table_df = table_df.rename(columns=existing_cols)
+
+# Zaokrúhlenie (ak existujú)
+if "📊 Medaily na 1 milión obyv." in table_df.columns:
+    table_df["📊 Medaily na 1 milión obyv."] = table_df["📊 Medaily na 1 milión obyv."].round(3)
+
+if "📈 Medaily na 1 milión USD" in table_df.columns:
+    table_df["📈 Medaily na 1 milión USD"] = table_df["📈 Medaily na 1 milión USD"].round(4)
+
+# Reset index pre krajší vzhľad
+table_df = table_df.reset_index(drop=True)
+
+st.dataframe(table_df, use_container_width=True)
 
 
