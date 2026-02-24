@@ -106,7 +106,7 @@ else:
     y = filtered["medals_per_invest"]
     ylabel = "Medaily / 1 milión € investícií"
 
-# 8) Graf
+
 # 8) Graf
 st.subheader("📊 Graf")
 
@@ -138,8 +138,8 @@ else:  # "💶 Medaily na 1 milión € investícií"
 
 chart_df = chart_df.head(top_n)
 
-fig, ax = plt.subplots(figsize=(10, 5), constrained_layout=True)
-st.pyplot(fig, clear_figure=True)
+plt.figure(figsize=(10, 5))
+ax = plt.gca()
 
 # --- A) Medaily spolu: môžeme stacked / grouped ---
 if metric == "🏅 Počet medailí (spolu)":
@@ -217,7 +217,7 @@ ax.set_axisbelow(True)
 ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.legend(frameon=False, ncol=3, loc="upper left")
+ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
 plt.tight_layout()
 st.pyplot(plt)
