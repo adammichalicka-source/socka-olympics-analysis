@@ -93,16 +93,17 @@ else:
 # 8) Graf
 st.subheader("📊 Graf – rozdelenie medailí (🥇🥈🥉)")
 
-# Top N (aby graf nebol preplnený)
+count = len(filtered)
+max_n = max(3, min(25, count))   # aby max nebolo menšie než 3
+default_n = min(10, count)       # default nemôže byť väčší než počet krajín
+
 top_n = st.slider(
     "Koľko krajín zobraziť (Top N):",
-    min_value=3,
-    max_value=min(25, len(filtered)),
-    value=min(10, len(filtered)),
+    min_value=1,
+    max_value=max_n,
+    value=default_n,
 )
-
 chart_df = filtered.sort_values("total", ascending=False).head(top_n)
-
 # Figure + axis (profi ovládanie štýlu)
 plt.figure(figsize=(10, 5))
 ax = plt.gca()
@@ -154,4 +155,5 @@ cols = ["country", "gold", "silver", "bronze", "total", "points", "population", 
 st.dataframe(filtered[cols].sort_values(by="points", ascending=False), use_container_width=True)
 
 st.caption("Pozn.: 'sport_invest' sú odhadované ročné investície do športu (v miliónoch USD) – vhodné pre porovnávaciu analýzu v SOČ.")
+
 
