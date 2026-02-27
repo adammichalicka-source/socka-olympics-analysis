@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy 
 st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
 
 st.title("🏅 Inteligentná medailová analýza krajín – ZOH 2026")
@@ -256,4 +255,5 @@ if "📈 Medaily na 1 milión €" in table_df.columns:
 table_df = table_df.reset_index(drop=True)
 
 st.dataframe(table_df, use_container_width=True)
+
 
