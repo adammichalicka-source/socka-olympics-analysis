@@ -22,29 +22,29 @@ if mode == "Celkové medaily":
 else:
     sport_data = pd.read_csv("olympics2026_top10_by_sport.csv")
 
-    # zober športy, očisti text
+    # očistenie textu
     sport_data["sport"] = sport_data["sport"].astype(str).str.strip()
+
+    # POISTKA: odstráni všetko, čo obsahuje "hockey"
+    sport_data = sport_data[~sport_data["sport"].str.lower().str.contains("hockey")].copy()
+
     sports = sorted(sport_data["sport"].unique().tolist())
 
-    # vyhoď hockey z ponuky
-    sports = [s for s in sports if s.lower() != "hockey"]
-
-    # preklad (len tie čo máš)
+    # preklad len tých 3 čo máš (bez hokeja)
     sport_translation = {
         "biathlon": "Biatlon",
         "skating": "Korčuľovanie",
         "skiing": "Lyžovanie",
     }
-    sports_sk = [sport_translation.get(s.lower(), s) for s in sports]
 
+    sports_sk = [sport_translation.get(s.lower(), s) for s in sports]
     selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
 
-    # späť na EN kľúč pre filtrovanie
     reverse_translation = {v: k for k, v in sport_translation.items()}
-    selected_sport = reverse_translation.get(selected_sport_sk, selected_sport_sk).lower()
+    selected_sport_en = reverse_translation.get(selected_sport_sk, selected_sport_sk).lower()
 
-    # filtrovanie dát
-    data = sport_data[sport_data["sport"].str.lower() == selected_sport].copy()
+    data = sport_data[sport_data["sport"].str.lower() == selected_sport_en].copy()
+    selected_sport = selected_sport_en
 
 
 # 2) Doplnkové údaje (populácia + investície)
