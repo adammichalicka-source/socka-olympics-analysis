@@ -3,17 +3,56 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-
+# =========================
 # Nastavenie stránky
-
+# =========================
 st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
 st.title("🏅 Inteligentná medailová analýza krajín – ZOH 2026")
 
+# =========================
+# Preklady EN → SK
+# =========================
+sport_translation = {
+    "biathlon": "Biatlon",
+    "skating": "Korčuľovanie",
+    "skiing": "Lyžovanie",
+    # hockey úmyselne nedávame
+}
 
+country_translation = {
+    "United States": "Spojené štáty",
+    "China": "Čína",
+    "Slovakia": "Slovensko",
+    "Norway": "Nórsko",
+    "Italy": "Taliansko",
+    "Germany": "Nemecko",
+    "Japan": "Japonsko",
+    "France": "Francúzsko",
+    "Switzerland": "Švajčiarsko",
+    "Canada": "Kanada",
+    "Netherlands": "Holandsko",
+    "Sweden": "Švédsko",
+    "Austria": "Rakúsko",
+    "South Korea": "Južná Kórea",
+    "Australia": "Austrália",
+    "Finland": "Fínsko",
+    "Czechia": "Česko",
+    "Great Britain": "Veľká Británia",
+    "Slovenia": "Slovinsko",
+    "Spain": "Španielsko",
+    "Brazil": "Brazília",
+    "Kazakhstan": "Kazachstan",
+    "Argentina": "Argentína",
+    "Bulgaria": "Bulharsko",
+}
+
+reverse_country_translation = {v: k for k, v in country_translation.items()}
+reverse_sport_translation = {v: k for k, v in sport_translation.items()}
+
+# =========================
 # 1) Režim + načítanie dát
-
+# =========================
 st.sidebar.header("⚙️ Nastavenia")
-
 mode = st.sidebar.radio("Režim:", ["Celkové medaily", "TOP 10 podľa športov"])
 
 if mode == "Celkové medaily":
@@ -22,33 +61,24 @@ if mode == "Celkové medaily":
 else:
     sport_data = pd.read_csv("olympics2026_top10_by_sport.csv")
 
-    # očistenie textu
+    # očistenie + poistka na hokej
     sport_data["sport"] = sport_data["sport"].astype(str).str.strip()
-
-    # POISTKA: odstráni všetko, čo obsahuje "hockey"
     sport_data = sport_data[~sport_data["sport"].str.lower().str.contains("hockey")].copy()
 
-    sports = sorted(sport_data["sport"].unique().tolist())
+    sports_en = sorted(sport_data["sport"].unique().tolist())
 
-    # preklad len tých 3 čo máš (bez hokeja)
-    sport_translation = {
-        "biathlon": "Biatlon",
-        "skating": "Korčuľovanie",
-        "skiing": "Lyžovanie",
-    }
-
-    sports_sk = [sport_translation.get(s.lower(), s) for s in sports]
+    # zobraz športy po slovensky
+    sports_sk = [sport_translation.get(s.lower(), s) for s in sports_en]
     selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
 
-    reverse_translation = {v: k for k, v in sport_translation.items()}
-    selected_sport_en = reverse_translation.get(selected_sport_sk, selected_sport_sk).lower()
+    # späť na EN pre filtrovanie
+    selected_sport = reverse_sport_translation.get(selected_sport_sk, selected_sport_sk).lower()
 
-    data = sport_data[sport_data["sport"].str.lower() == selected_sport_en].copy()
-    selected_sport = selected_sport_en
+    data = sport_data[sport_data["sport"].str.lower() == selected_sport].copy()
 
-
+# =========================
 # 2) Doplnkové údaje (populácia + investície)
-
+# =========================
 extra = {
     "United States": {"population": 331_000_000, "sport_invest": 30_000},  # mil. USD/rok (odhad)
     "China": {"population": 1_440_000_000, "sport_invest": 16_000},
@@ -79,15 +109,18 @@ for c in extra:
     if "sport_invest" in extra[c] and extra[c]["sport_invest"] is not None:
         extra[c]["sport_invest"] = extra[c]["sport_invest"] * USD_TO_EUR
 
-
-# 3) Doplníme stĺpce population a sport_invest
-
+# =========================
+# 3) Doplň stĺpce population a sport_invest + SK názvy
+# =========================
 data["population"] = data["country"].map(lambda c: extra.get(c, {}).get("population"))
 data["sport_invest"] = data["country"].map(lambda c: extra.get(c, {}).get("sport_invest"))
 
+# slovenské mená krajín pre UI
+data["country_sk"] = data["country"].map(lambda c: country_translation.get(c, c))
 
+# =========================
 # 4) Výpočty
-
+# =========================
 data["points"] = data["gold"] * 3 + data["silver"] * 2 + data["bronze"]
 data["medals_per_million"] = data["total"] / (data["population"] / 1_000_000)
 data["medals_per_invest"] = data["total"] / data["sport_invest"]  # medaily na 1 mil. € investícií
@@ -95,28 +128,30 @@ data["medals_per_invest"] = data["total"] / data["sport_invest"]  # medaily na 1
 data.loc[data["sport_invest"].isna() | (data["sport_invest"] == 0), "medals_per_invest"] = None
 data.loc[data["population"].isna() | (data["population"] == 0), "medals_per_million"] = None
 
-
+# =========================
 # 5) UI – výber krajín + typ grafu
+# =========================
+all_countries_sk = sorted(data["country_sk"].unique().tolist())
+default_sk = [country_translation.get(c, c) for c in ["United States", "China", "Slovakia"] if country_translation.get(c, c) in all_countries_sk]
 
-all_countries = sorted(data["country"].unique().tolist())
-default = [c for c in ["United States", "China", "Slovakia"] if c in all_countries]
-
-chosen = st.sidebar.multiselect("Vyber krajiny na porovnanie:", all_countries, default=default)
+chosen_sk = st.sidebar.multiselect("Vyber krajiny na porovnanie:", all_countries_sk, default=default_sk)
 
 chart_type = st.sidebar.selectbox(
     "Typ grafu:",
     ["Skladaný ( spolu)", "Skupinový ( vedľa seba)"]
 )
 
-if not chosen:
+if not chosen_sk:
     st.warning("Vyber aspoň jednu krajinu.")
     st.stop()
 
-filtered = data[data["country"].isin(chosen)].copy()
+# späť na EN kľúč pre filtrovanie
+chosen_en = [reverse_country_translation.get(c, c) for c in chosen_sk]
+filtered = data[data["country"].isin(chosen_en)].copy()
 
-
+# =========================
 # 6) UI – výber metriky
-
+# =========================
 metric = st.sidebar.selectbox(
     "Vyber metriku porovnania:",
     [
@@ -127,9 +162,9 @@ metric = st.sidebar.selectbox(
     ]
 )
 
-
+# =========================
 # 7) Príprava + dropna podľa metriky
-
+# =========================
 if metric == "🏅 Počet medailí (spolu)":
     pass
 elif metric == "⭐ Body (3-2-1)":
@@ -139,12 +174,14 @@ elif metric == "🌍 Medaily na 1 milión obyvateľov":
 else:
     filtered = filtered.dropna(subset=["medals_per_invest"])
 
+# ak po dropna nezostalo nič -> stop (fix slider error)
 if filtered.empty:
     st.warning("Pre zvolenú metriku nemajú vybrané krajiny potrebné údaje (populácia/investície).")
     st.stop()
 
-# 8) Graf + Top N 
-
+# =========================
+# 8) Graf + Top N (opravené)
+# =========================
 st.subheader("📊 Graf")
 
 count = len(filtered)
@@ -178,16 +215,17 @@ fig, ax = plt.subplots(figsize=(10, 5))
 # --- A) Medaily spolu: stacked/grouped ---
 if metric == "🏅 Počet medailí (spolu)":
     if chart_type == "Skladaný ( spolu)":
-        ax.bar(chart_df["country"], chart_df["gold"], label="🥇 Zlaté", color="#FFD700")
-        ax.bar(chart_df["country"], chart_df["silver"], bottom=chart_df["gold"], label="🥈 Strieborné", color="#C0C0C0")
+        ax.bar(chart_df["country_sk"], chart_df["gold"], label="🥇 Zlaté", color="#FFD700")
+        ax.bar(chart_df["country_sk"], chart_df["silver"], bottom=chart_df["gold"], label="🥈 Strieborné", color="#C0C0C0")
         ax.bar(
-            chart_df["country"],
+            chart_df["country_sk"],
             chart_df["bronze"],
             bottom=chart_df["gold"] + chart_df["silver"],
             label="🥉 Bronzové",
             color="#CD7F32"
         )
 
+        # čísla vnútri + total hore
         for i in range(len(chart_df)):
             g = int(chart_df.iloc[i]["gold"])
             s = int(chart_df.iloc[i]["silver"])
@@ -206,7 +244,7 @@ if metric == "🏅 Počet medailí (spolu)":
         plt.xticks(rotation=35, ha="right")
 
     else:
-        # Skupinový (vedľa seba)
+        # Skupinový (vedľa seba) – FIX: total nad najvyšší stĺpec
         x = np.arange(len(chart_df))
         w = 0.25
 
@@ -220,7 +258,7 @@ if metric == "🏅 Počet medailí (spolu)":
         ax.bar(x + w, bronze, w, label="🥉 Bronzové", color="#CD7F32")
 
         ax.set_xticks(x)
-        ax.set_xticklabels(chart_df["country"], rotation=35, ha="right")
+        ax.set_xticklabels(chart_df["country_sk"], rotation=35, ha="right")
 
         for i in range(len(chart_df)):
             top = max(gold[i], silver[i], bronze[i])
@@ -243,11 +281,10 @@ else:
         ylabel = "Medaily / 1 milión € investícií"
         fmt = "{:.4f}"
 
-    ax.bar(chart_df["country"], y)
+    ax.bar(chart_df["country_sk"], y)
     plt.xticks(rotation=35, ha="right")
     ax.set_ylabel(ylabel, fontsize=11)
 
-    # hodnoty nad stĺpcami
     y_max = float(y.max()) if len(y) else 0
     pad = y_max * 0.02 if y_max > 0 else 0.1
     for i, val in enumerate(y.tolist()):
@@ -259,21 +296,24 @@ ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-# legenda
+# legenda len pri medailách
 if metric == "🏅 Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
 plt.tight_layout()
 st.pyplot(fig)
 
-# 9) Tabuľka výsledkov
-
+# =========================
+# 9) Tabuľka výsledkov (so slovenskými názvami)
+# =========================
 st.subheader("📋 Analytická tabuľka")
 
 table_df = chart_df.copy()
 
+# v tabuľke nech je názov krajiny po slovensky
+table_df = table_df.drop(columns=["country"], errors="ignore").rename(columns={"country_sk": "Krajina"})
+
 rename_columns = {
-    "country": "Krajina",
     "gold": "🥇 Zlaté medaily",
     "silver": "🥈 Strieborné medaily",
     "bronze": "🥉 Bronzové medaily",
@@ -282,11 +322,10 @@ rename_columns = {
     "population": "Populácia",
     "sport_invest": "Investície do športu (mil. €)",
     "medals_per_million": "Medaily na 1 milión obyv.",
-    "medals_per_invest": "Medaily na 1 milión €"
+    "medals_per_invest": "Medaily na 1 milión €",
 }
 
-existing_cols = {k: v for k, v in rename_columns.items() if k in table_df.columns}
-table_df = table_df.rename(columns=existing_cols)
+table_df = table_df.rename(columns={k: v for k, v in rename_columns.items() if k in table_df.columns})
 
 if "Medaily na 1 milión obyv." in table_df.columns:
     table_df["Medaily na 1 milión obyv."] = table_df["Medaily na 1 milión obyv."].round(3)
