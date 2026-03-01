@@ -185,7 +185,7 @@ def plot_chart(chart_df: pd.DataFrame, chart_type: str, title: str, show_total_o
     ax.set_xticklabels(chart_df["country"].astype(str).tolist(), rotation=30, ha="right")
     ax.set_ylabel("Počet medailí")
     ax.set_title(title)
-    ax.legend()
+    ax.legend(frameon=False)
 
     st.pyplot(fig)
 
