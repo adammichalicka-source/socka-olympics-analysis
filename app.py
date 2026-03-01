@@ -21,9 +21,30 @@ if mode == "Celkové medaily":
     selected_sport = None
 else:
     sport_data = pd.read_csv("olympics2026_top10_by_sport.csv")
+
+    # zober športy, očisti text
+    sport_data["sport"] = sport_data["sport"].astype(str).str.strip()
     sports = sorted(sport_data["sport"].unique().tolist())
-    selected_sport = st.sidebar.selectbox("Vyber šport:", sports)
-    data = sport_data[sport_data["sport"] == selected_sport].copy()
+
+    # vyhoď hockey z ponuky
+    sports = [s for s in sports if s.lower() != "hockey"]
+
+    # preklad (len tie čo máš)
+    sport_translation = {
+        "biathlon": "Biatlon",
+        "skating": "Korčuľovanie",
+        "skiing": "Lyžovanie",
+    }
+    sports_sk = [sport_translation.get(s.lower(), s) for s in sports]
+
+    selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
+
+    # späť na EN kľúč pre filtrovanie
+    reverse_translation = {v: k for k, v in sport_translation.items()}
+    selected_sport = reverse_translation.get(selected_sport_sk, selected_sport_sk).lower()
+
+    # filtrovanie dát
+    data = sport_data[sport_data["sport"].str.lower() == selected_sport].copy()
 
 
 # 2) Doplnkové údaje (populácia + investície)
