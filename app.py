@@ -3,15 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-# =========================
+
 # Nastavenie stránky
-# =========================
+
 st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
 st.title("🏅 Inteligentná medailová analýza krajín – ZOH 2026")
 
-# =========================
+
 # 1) Režim + načítanie dát
-# =========================
+
 st.sidebar.header("⚙️ Nastavenia")
 
 mode = st.sidebar.radio("Režim:", ["Celkové medaily", "TOP 10 podľa športov"])
@@ -25,9 +25,9 @@ else:
     selected_sport = st.sidebar.selectbox("Vyber šport:", sports)
     data = sport_data[sport_data["sport"] == selected_sport].copy()
 
-# =========================
+
 # 2) Doplnkové údaje (populácia + investície)
-# =========================
+
 extra = {
     "United States": {"population": 331_000_000, "sport_invest": 30_000},  # mil. USD/rok (odhad)
     "China": {"population": 1_440_000_000, "sport_invest": 16_000},
@@ -58,15 +58,15 @@ for c in extra:
     if "sport_invest" in extra[c] and extra[c]["sport_invest"] is not None:
         extra[c]["sport_invest"] = extra[c]["sport_invest"] * USD_TO_EUR
 
-# =========================
-# 3) Doplň stĺpce population a sport_invest
-# =========================
+
+# 3) Doplníme stĺpce population a sport_invest
+
 data["population"] = data["country"].map(lambda c: extra.get(c, {}).get("population"))
 data["sport_invest"] = data["country"].map(lambda c: extra.get(c, {}).get("sport_invest"))
 
-# =========================
+
 # 4) Výpočty
-# =========================
+
 data["points"] = data["gold"] * 3 + data["silver"] * 2 + data["bronze"]
 data["medals_per_million"] = data["total"] / (data["population"] / 1_000_000)
 data["medals_per_invest"] = data["total"] / data["sport_invest"]  # medaily na 1 mil. € investícií
@@ -74,9 +74,9 @@ data["medals_per_invest"] = data["total"] / data["sport_invest"]  # medaily na 1
 data.loc[data["sport_invest"].isna() | (data["sport_invest"] == 0), "medals_per_invest"] = None
 data.loc[data["population"].isna() | (data["population"] == 0), "medals_per_million"] = None
 
-# =========================
+
 # 5) UI – výber krajín + typ grafu
-# =========================
+
 all_countries = sorted(data["country"].unique().tolist())
 default = [c for c in ["United States", "China", "Slovakia"] if c in all_countries]
 
@@ -93,9 +93,9 @@ if not chosen:
 
 filtered = data[data["country"].isin(chosen)].copy()
 
-# =========================
+
 # 6) UI – výber metriky
-# =========================
+
 metric = st.sidebar.selectbox(
     "Vyber metriku porovnania:",
     [
@@ -106,9 +106,9 @@ metric = st.sidebar.selectbox(
     ]
 )
 
-# =========================
+
 # 7) Príprava + dropna podľa metriky
-# =========================
+
 if metric == "🏅 Počet medailí (spolu)":
     pass
 elif metric == "⭐ Body (3-2-1)":
@@ -118,14 +118,12 @@ elif metric == "🌍 Medaily na 1 milión obyvateľov":
 else:
     filtered = filtered.dropna(subset=["medals_per_invest"])
 
-# ak po dropna nezostalo nič -> stop (toto fixuje slider error)
 if filtered.empty:
     st.warning("Pre zvolenú metriku nemajú vybrané krajiny potrebné údaje (populácia/investície).")
     st.stop()
 
-# =========================
-# 8) Graf + Top N (opravené)
-# =========================
+# 8) Graf + Top N 
+
 st.subheader("📊 Graf")
 
 count = len(filtered)
@@ -169,7 +167,6 @@ if metric == "🏅 Počet medailí (spolu)":
             color="#CD7F32"
         )
 
-        # čísla vnútri + total hore (ako si mal)
         for i in range(len(chart_df)):
             g = int(chart_df.iloc[i]["gold"])
             s = int(chart_df.iloc[i]["silver"])
@@ -188,7 +185,7 @@ if metric == "🏅 Počet medailí (spolu)":
         plt.xticks(rotation=35, ha="right")
 
     else:
-        # Skupinový (vedľa seba) – OPRAVA: total nad najvyšší stĺpec, nie na total
+        # Skupinový (vedľa seba)
         x = np.arange(len(chart_df))
         w = 0.25
 
@@ -204,7 +201,6 @@ if metric == "🏅 Počet medailí (spolu)":
         ax.set_xticks(x)
         ax.set_xticklabels(chart_df["country"], rotation=35, ha="right")
 
-        # total nad najvyšším stĺpcom v skupine (fix tvojho problému)
         for i in range(len(chart_df)):
             top = max(gold[i], silver[i], bronze[i])
             ax.text(i, top + 0.3, str(int(total[i])), ha="center", va="bottom", fontsize=10, fontweight="bold")
@@ -242,16 +238,15 @@ ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-# legenda len ak sme v "medaily spolu" (inak je prázdna)
+# legenda
 if metric == "🏅 Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
 plt.tight_layout()
 st.pyplot(fig)
 
-# =========================
 # 9) Tabuľka výsledkov
-# =========================
+
 st.subheader("📋 Analytická tabuľka")
 
 table_df = chart_df.copy()
