@@ -300,6 +300,9 @@ ax.spines["right"].set_visible(False)
 if metric == "🏅 Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
+    from matplotlib.ticker import MaxNLocator
+ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
 plt.tight_layout()
 st.pyplot(fig)
 
