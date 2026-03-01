@@ -98,10 +98,17 @@ if filtered.empty:
 
 # Top N – bezpečne aj pri 1 krajine
 count = len(filtered)
-max_n = max(1, min(25, count))
-default_n = max(1, min(10, count))
 
-top_n = st.sidebar.slider("Koľko krajín zobraziť (Top N)", 1, max_n, default_n)
+if count == 0:
+    st.warning("Po filtrovaní nezostali žiadne údaje (skús inú krajinu / metriku).")
+    st.stop()
+
+if count == 1:
+    top_n = 1
+else:
+    max_n = min(25, count)
+    default_n = min(10, count)
+    top_n = st.sidebar.slider("Koľko krajín zobraziť (Top N)", 1, max_n, default_n)
 
 filtered = filtered.sort_values("__metric", ascending=False).head(top_n)
 
