@@ -17,12 +17,12 @@ def load_countries():
     df = pd.read_csv("olympics2026.csv")
     df.columns = [c.strip().lower() for c in df.columns]
 
-    # krajina
+    # stĺpec krajiny
     if "country" not in df.columns:
         df = df.rename(columns={df.columns[0]: "country"})
     df["country"] = df["country"].astype(str).str.strip()
 
-    # medaily
+    # povinné medailové stĺpce
     for c in ["gold", "silver", "bronze"]:
         if c not in df.columns:
             st.error(f"V olympics2026.csv chýba stĺpec '{c}'.")
@@ -56,7 +56,6 @@ def load_countries():
 
 @st.cache_data
 def load_sports():
-    # ak súbor neexistuje alebo je zle, vrátime None
     try:
         df_s = pd.read_csv("olympics2026_top10_by_sport.csv")
     except Exception:
@@ -64,7 +63,7 @@ def load_sports():
 
     df_s.columns = [c.strip().lower() for c in df_s.columns]
 
-    # nájdi stĺpec so športom
+    # nájdi stĺpec športu
     sport_col = None
     for c in ["sport", "discipline", "event"]:
         if c in df_s.columns:
@@ -73,11 +72,11 @@ def load_sports():
     if sport_col is None:
         return None
 
-    # nájdi stĺpec s krajinou
+    # nájdi stĺpec krajiny
     if "country" in df_s.columns:
         country_col = "country"
     else:
-        # prvý rozumný kandidát
+        # prvý "rozumný" stĺpec čo nie je šport a nie sú medaily
         country_col = None
         for c in df_s.columns:
             if c not in [sport_col, "gold", "silver", "bronze", "total"]:
@@ -105,21 +104,37 @@ def load_sports():
 
 
 df = load_countries()
-sport_pack = load_sports()  # buď None alebo (df_sport, sport_col, country_col)
+sport_pack = load_sports()  # None alebo (df_sport, sport_col, country_col)
 
 # =========================
-# 3) Funkcia na graf
+# 3) Funkcie na anotácie
 # =========================
 C_GOLD = "#FFD700"
 C_SILV = "#C0C0C0"
 C_BRON = "#CD7F32"
 
-def plot_chart(chart_df: pd.DataFrame, chart_type: str, title: str):
+def annotate_grouped(ax, bars):
+    """Napíše číslo na vrch každého stĺpca (ak > 0)."""
+    for b in bars:
+        h = b.get_height()
+        if h and h > 0:
+            ax.text(b.get_x() + b.get_width()/2, h + 0.15, f"{int(h)}",
+                    ha="center", va="bottom", fontsize=9, fontweight="bold")
+
+def annotate_stacked_segment(ax, x_positions, bottoms, values):
+    """Napíše číslo do stredu segmentu (ak > 0)."""
+    for i, v in enumerate(values):
+        if v and v > 0:
+            y = bottoms[i] + v/2
+            ax.text(x_positions[i], y, f"{int(v)}",
+                    ha="center", va="center", fontsize=9, fontweight="bold")
+
+def plot_chart(chart_df: pd.DataFrame, chart_type: str, title: str, show_total_on_top: bool = True):
     if chart_df.empty:
         st.warning("Nie sú dáta na vykreslenie grafu.")
         return
 
-    fig, ax = plt.subplots(figsize=(10, 5))  # vždy nový graf -> nič sa neprekrýva
+    fig, ax = plt.subplots(figsize=(10, 5))  # vždy nový graf
 
     x = np.arange(len(chart_df))
     gold = chart_df["gold"].to_numpy(dtype=float)
@@ -128,31 +143,43 @@ def plot_chart(chart_df: pd.DataFrame, chart_type: str, title: str):
     total = chart_df["total"].to_numpy(dtype=float)
 
     if chart_type == "Skladaný (stacked)":
-        ax.bar(x, gold, color=C_GOLD, label="🥇 Zlaté")
-        ax.bar(x, silver, bottom=gold, color=C_SILV, label="🥈 Strieborné")
-        ax.bar(x, bronze, bottom=gold + silver, color=C_BRON, label="🥉 Bronzové")
+        b1 = ax.bar(x, gold, color=C_GOLD, label="🥇 Zlaté")
+        b2 = ax.bar(x, silver, bottom=gold, color=C_SILV, label="🥈 Strieborné")
+        b3 = ax.bar(x, bronze, bottom=gold + silver, color=C_BRON, label="🥉 Bronzové")
 
-        ax.set_ylim(0, float(np.max(total)) + 2)
+        ax.set_ylim(0, float(np.max(total)) + 3)
 
-        # TOTAL nad stĺpcom
-        for i in range(len(chart_df)):
-            ax.text(i, total[i] + 0.3, f"{int(total[i])}",
-                    ha="center", va="bottom", fontweight="bold")
+        # čísla pre každý segment
+        annotate_stacked_segment(ax, x, np.zeros_like(gold), gold)
+        annotate_stacked_segment(ax, x, gold, silver)
+        annotate_stacked_segment(ax, x, gold + silver, bronze)
+
+        # voliteľne total hore
+        if show_total_on_top:
+            for i in range(len(chart_df)):
+                ax.text(i, total[i] + 0.25, f"{int(total[i])}",
+                        ha="center", va="bottom", fontsize=10, fontweight="bold")
 
     else:  # Skupinový (grouped)
         w = 0.25
-        ax.bar(x - w, gold, w, color=C_GOLD, label="🥇 Zlaté")
-        ax.bar(x,     silver, w, color=C_SILV, label="🥈 Strieborné")
-        ax.bar(x + w, bronze, w, color=C_BRON, label="🥉 Bronzové")
+        bars_g = ax.bar(x - w, gold, w, color=C_GOLD, label="🥇 Zlaté")
+        bars_s = ax.bar(x,     silver, w, color=C_SILV, label="🥈 Strieborné")
+        bars_b = ax.bar(x + w, bronze, w, color=C_BRON, label="🥉 Bronzové")
 
         ymax = float(np.max([gold.max(), silver.max(), bronze.max()])) if len(chart_df) else 1.0
-        ax.set_ylim(0, ymax + 2)
+        ax.set_ylim(0, ymax + 3)
 
-        # TOTAL nad najvyšším stĺpcom v skupine
-        for i in range(len(chart_df)):
-            top = max(gold[i], silver[i], bronze[i])
-            ax.text(i, top + 0.3, f"{int(total[i])}",
-                    ha="center", va="bottom", fontweight="bold")
+        # čísla na stĺpcoch
+        annotate_grouped(ax, bars_g)
+        annotate_grouped(ax, bars_s)
+        annotate_grouped(ax, bars_b)
+
+        # voliteľne total nad skupinou
+        if show_total_on_top:
+            for i in range(len(chart_df)):
+                top = max(gold[i], silver[i], bronze[i])
+                ax.text(i, top + 0.7, f"{int(total[i])}",
+                        ha="center", va="bottom", fontsize=10, fontweight="bold")
 
     ax.set_xticks(x)
     ax.set_xticklabels(chart_df["country"].astype(str).tolist(), rotation=30, ha="right")
@@ -176,15 +203,20 @@ mode = st.sidebar.radio("Režim", modes)
 chart_type = st.sidebar.radio("Typ grafu", ["Skladaný (stacked)", "Skupinový (grouped)"])
 
 # =========================
-# 5) REŽIM: KRAJINY
+# 5) Režim: KRAJINY (bez default výberu)
 # =========================
 if mode == "Krajiny":
     all_countries = sorted(df["country"].unique().tolist())
+
     selected = st.sidebar.multiselect(
         "Vyber krajiny",
         all_countries,
-        default=all_countries[:5] if len(all_countries) >= 5 else all_countries
+        default=[]  # nič sa nevyberie automaticky
     )
+
+    if len(selected) == 0:
+        st.info("Vyber aspoň jednu krajinu vľavo v nastaveniach.")
+        st.stop()
 
     metric = st.sidebar.selectbox(
         "Metrika zoradenia",
@@ -198,7 +230,7 @@ if mode == "Krajiny":
 
     filtered = df[df["country"].isin([str(x).strip() for x in selected])].copy()
 
-    # metrika + dropna (aby nevzniklo 0/NaN)
+    # metrika
     if metric == "🏅 Celkové medaily":
         filtered["__metric"] = filtered["total"]
     elif metric == "⭐ Body 3-2-1":
@@ -217,18 +249,16 @@ if mode == "Krajiny":
         filtered["__metric"] = filtered["medals_per_invest"]
 
     if filtered.empty:
-        st.warning("Po filtrovaní nezostali žiadne údaje (skús inú krajinu alebo metriku).")
+        st.warning("Po filtrovaní nezostali žiadne údaje.")
         st.stop()
 
-    # bezpečný Top N (pri 1 krajine sa slider ani nezobrazí)
+    # Top N len ak chceš (zmysel pri veľa vybraných)
     count = len(filtered)
     if count == 1:
         top_n = 1
-        st.sidebar.info("Top N: iba 1 krajina (automaticky 1).")
     else:
         max_n = min(25, count)
-        default_n = min(10, count)
-        top_n = st.sidebar.slider("Koľko krajín zobraziť (Top N)", 1, max_n, default_n)
+        top_n = st.sidebar.slider("Koľko krajín zobraziť (Top N)", 1, max_n, max_n)
 
     filtered = filtered.sort_values("__metric", ascending=False).head(top_n)
 
@@ -238,7 +268,7 @@ if mode == "Krajiny":
         plot_chart(
             filtered[["country", "gold", "silver", "bronze", "total"]],
             chart_type,
-            f"{metric} – Top {top_n}"
+            f"{metric} – zvolené krajiny"
         )
 
     with col2:
@@ -246,7 +276,7 @@ if mode == "Krajiny":
         st.dataframe(filtered.reset_index(drop=True), use_container_width=True)
 
 # =========================
-# 6) REŽIM: TOP 10 PODĽA ŠPORTU
+# 6) Režim: TOP 10 PODĽA ŠPORTU (výber športu + výber krajín)
 # =========================
 else:
     df_sport, sport_col, country_col = sport_pack
@@ -259,33 +289,51 @@ else:
         st.warning("Pre zvolený šport nie sú dáta.")
         st.stop()
 
-    sdf = sdf.sort_values("total", ascending=False)
-
-    # bezpečný Top N
-    count = len(sdf)
-    if count == 1:
-        top_n = 1
-        st.sidebar.info("Top N: iba 1 krajina (automaticky 1).")
-    else:
-        max_n = min(10, count)  # pri športoch dáva zmysel max 10
-        top_n = st.sidebar.slider("Koľko krajín zobraziť (Top N)", 1, max_n, max_n)
-
-    sdf = sdf.head(top_n)
-
-    # zjednotíme názov krajiny na "country"
+    # zjednotíme názov krajiny na country
     if country_col != "country":
         sdf = sdf.rename(columns={country_col: "country"})
     sdf["country"] = sdf["country"].astype(str).str.strip()
+
+    # výber krajín, ktoré chceš sledovať (bez defaultu)
+    sport_countries = sorted(sdf["country"].unique().tolist())
+    selected_sport_countries = st.sidebar.multiselect(
+        "Vyber krajiny (v tomto športe)",
+        sport_countries,
+        default=[]
+    )
+
+    if len(selected_sport_countries) == 0:
+        st.info("Vyber aspoň jednu krajinu vľavo (Top 10 podľa športu).")
+        st.stop()
+
+    filtered = sdf[sdf["country"].isin([str(x).strip() for x in selected_sport_countries])].copy()
+    if filtered.empty:
+        st.warning("Po filtrovaní nezostali žiadne údaje.")
+        st.stop()
+
+    # zoradenie (napr. podľa total)
+    filtered = filtered.sort_values("total", ascending=False)
+
+    # Top N len ak máš veľa vybraných (inak to netreba)
+    count = len(filtered)
+    if count == 1:
+        top_n = 1
+    else:
+        max_n = min(10, count)
+        top_n = st.sidebar.slider("Koľko krajín zobraziť (Top N)", 1, max_n, max_n)
+
+    filtered = filtered.head(top_n)
 
     col1, col2 = st.columns([1.2, 1])
 
     with col1:
         plot_chart(
-            sdf[["country", "gold", "silver", "bronze", "total"]],
+            filtered[["country", "gold", "silver", "bronze", "total"]],
             chart_type,
-            f"{chosen_sport} – Top {top_n}"
+            f"{chosen_sport} – zvolené krajiny"
         )
 
     with col2:
         st.subheader("📋 Tabuľka")
-        st.dataframe(sdf[["country", "gold", "silver", "bronze", "total"]].reset_index(drop=True), use_container_width=True)
+        st.dataframe(filtered[["country", "gold", "silver", "bronze", "total"]].reset_index(drop=True),
+                     use_container_width=True)
