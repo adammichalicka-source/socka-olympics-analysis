@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+
 st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
 
 st.title("🏅 Inteligentná medailová analýza krajín – ZOH 2026")
@@ -112,7 +113,7 @@ st.subheader("📊 Graf")
 
 import numpy as np
 
-# Top N
+
 count = len(filtered)
 max_n = max(1, min(25, count))
 default_n = min(10, count)
@@ -141,7 +142,7 @@ chart_df = chart_df.head(top_n)
 plt.figure(figsize=(10, 5))
 ax = plt.gca()
 
-# --- A) Medaily spolu: môžeme stacked / grouped ---
+
 if metric == "🏅 Počet medailí (spolu)":
 
     if chart_type == "Skladaný (🥇🥈🥉 spolu)":
@@ -171,21 +172,39 @@ if metric == "🏅 Počet medailí (spolu)":
         plt.xticks(rotation=35, ha="right")
 
     else:  # Skupinový
-        x = np.arange(len(chart_df))
-        w = 0.25
+     pass
+    x = np.arange(len(chart_df))
+    w = 0.25
 
-        ax.bar(x - w, chart_df["gold"], w, label="🥇 Zlaté", color="#FFD700")
-        ax.bar(x,     chart_df["silver"], w, label="🥈 Strieborné", color="#C0C0C0")
-        ax.bar(x + w, chart_df["bronze"], w, label="🥉 Bronzové", color="#CD7F32")
+    bars_gold = ax.bar(x - w, chart_df["gold"],   w, label="🥇 Zlaté")
+    bars_silv = ax.bar(x,     chart_df["silver"], w, label="🥈 Strieborné")
+    bars_bron = ax.bar(x + w, chart_df["bronze"], w, label="🥉 Bronzové")
 
-        ax.set_xticks(x)
-        ax.set_xticklabels(chart_df["country"], rotation=35, ha="right")
+    # popisy osi X
+    ax.set_xticks(x)
+    ax.set_xticklabels(chart_df["country"], rotation=30, ha="right")
 
-        for i in range(len(chart_df)):
-            t = int(chart_df.iloc[i]["total"])
-            ax.text(i, t + 0.3, str(t), ha="center", va="bottom", fontsize=10, fontweight="bold")
+    # osi a legenda
+    ax.set_ylabel("Počet medailí")
+    ax.legend()
 
-    ax.set_ylabel("Počet medailí", fontsize=11)
+    # aby sa nad stĺpce vošli aj čísla
+    max_medal = float(np.nanmax([chart_df["gold"].max(),
+                                 chart_df["silver"].max(),
+                                 chart_df["bronze"].max()]))
+    ax.set_ylim(0, max_medal + 2)
+
+    # číslo TOTAL nad najvyšší stĺpec v skupine
+    for i in range(len(chart_df)):
+        g = float(chart_df.iloc[i]["gold"])
+        s = float(chart_df.iloc[i]["silver"])
+        b = float(chart_df.iloc[i]["bronze"])
+        t = int(chart_df.iloc[i]["total"])
+
+        top = max(g, s, b)
+        ax.text(i, top + 0.3, str(t),
+                ha="center", va="bottom",
+                fontsize=10, fontweight="bold")
 
 # --- B) Ostatné metriky: 1 stĺpec na krajinu ---
 else:
@@ -240,7 +259,7 @@ rename_columns = {
    "medals_per_invest": "📈 Medaily na 1 milión €"
 }
 
-# Premenuj iba tie, ktoré existujú
+
 existing_cols = {k: v for k, v in rename_columns.items() if k in table_df.columns}
 table_df = table_df.rename(columns=existing_cols)
 
@@ -255,5 +274,3 @@ if "📈 Medaily na 1 milión €" in table_df.columns:
 table_df = table_df.reset_index(drop=True)
 
 st.dataframe(table_df, use_container_width=True)
-
-
