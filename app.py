@@ -301,7 +301,7 @@ if metric == "🏅 Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
     from matplotlib.ticker import MaxNLocator
-ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
 
 plt.tight_layout()
 st.pyplot(fig)
@@ -338,3 +338,4 @@ if "Medaily na 1 milión €" in table_df.columns:
 
 table_df = table_df.reset_index(drop=True)
 st.dataframe(table_df, use_container_width=True)
+
