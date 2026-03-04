@@ -1,44 +1,129 @@
-sport,country,gold,silver,bronze,total
-Skiing,Norway,6,3,2,11
-Skiing,United States,2,2,1,5
-Skiing,Italy,2,1,2,5
-Skiing,Germany,2,2,1,5
-Skiing,France,2,2,2,6
-Skiing,Switzerland,2,2,2,6
-Skiing,Canada,1,1,2,4
-Skiing,Netherlands,0,1,0,1
-Skiing,Sweden,1,1,1,3
-Skiing,Austria,1,2,1,4
+sport,krajina,zlato,striebro,bronz,spolu
+Alpské lyžovanie,Švajčiarsko,4,3,2,9
+Alpské lyžovanie,Taliansko,2,1,2,5
+Alpské lyžovanie,Spojené štáty,2,1,1,4
+Alpské lyžovanie,Rakúsko,1,2,1,4
+Alpské lyžovanie,Nemecko,0,2,0,2
+Alpské lyžovanie,Nórsko,0,1,1,2
+Alpské lyžovanie,Švédsko,0,1,1,2
+Alpské lyžovanie,Brazília,1,0,0,1
+Alpské lyžovanie,Francúzsko,0,1,0,1
 
-Skating,Netherlands,7,2,1,10
-Skating,Norway,2,2,2,6
-Skating,United States,2,2,1,5
-Skating,Italy,1,1,2,4
-Skating,Germany,1,2,1,4
-Skating,France,1,1,1,3
-Skating,Switzerland,0,1,0,1
-Skating,Canada,1,1,1,3
-Skating,Sweden,1,1,1,3
-Skating,Austria,0,1,1,2
+Biatlon,Francúzsko,6,4,3,13
+Biatlon,Nórsko,3,5,3,11
+Biatlon,Švédsko,1,1,1,3
+Biatlon,Taliansko,1,1,0,2
+Biatlon,Bulharsko,0,0,1,1
+Biatlon,Česko,0,0,1,1
+Biatlon,Fínsko,0,0,1,1
+Biatlon,Nemecko,0,0,1,1
 
-Biathlon,Norway,4,3,2,9
-Biathlon,Germany,2,3,2,7
-Biathlon,France,2,2,2,6
-Biathlon,Italy,1,1,2,4
-Biathlon,Sweden,1,1,1,3
-Biathlon,Switzerland,1,1,1,3
-Biathlon,Austria,1,2,1,4
-Biathlon,United States,0,1,1,2
-Biathlon,Canada,0,0,1,1
-Biathlon,Netherlands,0,0,0,0
+Boby,Nemecko,3,4,1,8
+Boby,Spojené štáty,1,0,2,3
+Boby,Švajčiarsko,0,0,1,1
 
-Ice Hockey,Canada,1,0,1,2
-Ice Hockey,United States,1,1,0,2
-Ice Hockey,Sweden,0,1,1,2
-Ice Hockey,Germany,0,1,0,1
-Ice Hockey,Finland,0,1,0,1
-Ice Hockey,Switzerland,0,0,1,1
-Ice Hockey,Italy,0,0,0,0
-Ice Hockey,Norway,0,0,0,0
-Ice Hockey,Netherlands,0,0,0,0
-Ice Hockey,Austria,0,0,0,0
+Beh na lyžiach,Nórsko,7,2,5,14
+Beh na lyžiach,Švédsko,5,4,1,10
+Beh na lyžiach,Francúzsko,0,3,0,3
+Beh na lyžiach,Spojené štáty,0,2,1,3
+Beh na lyžiach,Švajčiarsko,0,1,1,2
+Beh na lyžiach,Taliansko,0,0,2,2
+Beh na lyžiach,Fínsko,0,0,1,1
+Beh na lyžiach,Nemecko,0,0,1,1
+
+Curling,Švédsko,2,0,0,2
+Curling,Kanada,1,0,1,2
+Curling,Švajčiarsko,0,1,1,2
+Curling,Veľká Británia,0,1,0,1
+Curling,Spojené štáty,0,1,0,1
+Curling,Taliansko,0,0,1,1
+
+Krasokorčuľovanie,Japonsko,1,3,2,6
+Krasokorčuľovanie,Spojené štáty,2,1,0,3
+Krasokorčuľovanie,Francúzsko,1,0,0,1
+Krasokorčuľovanie,Kazachstan,1,0,0,1
+Krasokorčuľovanie,Gruzínsko,0,1,0,1
+Krasokorčuľovanie,Kanada,0,0,1,1
+Krasokorčuľovanie,Nemecko,0,0,1,1
+Krasokorčuľovanie,Taliansko,0,0,1,1
+
+Freestyle lyžovanie,Čína,3,3,3,9
+Freestyle lyžovanie,Spojené štáty,3,4,1,8
+Freestyle lyžovanie,Kanada,2,1,2,5
+Freestyle lyžovanie,Švajčiarsko,1,3,1,5
+Freestyle lyžovanie,Austrália,2,1,1,4
+Freestyle lyžovanie,Taliansko,1,1,1,3
+Freestyle lyžovanie,Nórsko,2,0,0,2
+Freestyle lyžovanie,Japonsko,0,1,1,2
+Freestyle lyžovanie,Nemecko,1,0,0,1
+Freestyle lyžovanie,Estónsko,0,1,0,1
+Freestyle lyžovanie,Rakúsko,0,0,1,1
+Freestyle lyžovanie,Francúzsko,0,0,1,1
+Freestyle lyžovanie,Veľká Británia,0,0,1,1
+Freestyle lyžovanie,Nový Zéland,0,0,1,1
+Freestyle lyžovanie,Švédsko,0,0,1,1
+
+Ľadový hokej,Spojené štáty,2,0,0,2
+Ľadový hokej,Kanada,0,2,0,2
+Ľadový hokej,Fínsko,0,0,1,1
+Ľadový hokej,Švajčiarsko,0,0,1,1
+
+Sánkovanie,Nemecko,3,1,1,5
+Sánkovanie,Taliansko,2,0,2,4
+Sánkovanie,Rakúsko,0,3,1,4
+Sánkovanie,Lotyšsko,0,1,0,1
+Sánkovanie,Spojené štáty,0,0,1,1
+
+Severská kombinácia,Nórsko,3,0,0,3
+Severská kombinácia,Rakúsko,0,2,1,3
+Severská kombinácia,Fínsko,0,1,2,3
+
+Short track,Holandsko,5,1,1,7
+Short track,Južná Kórea,2,3,2,7
+Short track,Kanada,1,2,2,5
+Short track,Taliansko,1,2,1,4
+Short track,Čína,0,1,0,1
+Short track,Belgicko,0,0,1,1
+Short track,Lotyšsko,0,0,1,1
+Short track,Spojené štáty,0,0,1,1
+
+Skeleton,Nemecko,0,3,3,6
+Skeleton,Veľká Británia,2,0,0,2
+Skeleton,Rakúsko,1,0,0,1
+
+Skoky na lyžiach,Nórsko,2,2,1,5
+Skoky na lyžiach,Slovinsko,2,1,1,4
+Skoky na lyžiach,Japonsko,0,1,3,4
+Skoky na lyžiach,Poľsko,0,2,1,3
+Skoky na lyžiach,Rakúsko,1,0,0,1
+Skoky na lyžiach,Nemecko,1,0,0,1
+Skoky na lyžiach,Švajčiarsko,0,0,1,1
+
+Skialpinizmus,Francúzsko,1,1,1,3
+Skialpinizmus,Španielsko,1,0,2,3
+Skialpinizmus,Švajčiarsko,1,1,0,2
+
+Snowboard,Japonsko,4,2,3,9
+Snowboard,Rakúsko,2,1,1,4
+Snowboard,Južná Kórea,1,1,1,3
+Snowboard,Taliansko,0,1,2,3
+Snowboard,Austrália,1,1,0,2
+Snowboard,Česko,1,1,0,2
+Snowboard,Čína,1,0,1,2
+Snowboard,Nový Zéland,0,2,0,2
+Snowboard,Spojené štáty,0,1,1,2
+Snowboard,Veľká Británia,1,0,0,1
+Snowboard,Kanada,0,1,0,1
+Snowboard,Bulharsko,0,0,1,1
+Snowboard,Francúzsko,0,0,1,1
+
+Rýchlokorčuľovanie,Holandsko,5,6,2,13
+Rýchlokorčuľovanie,Taliansko,3,0,2,5
+Rýchlokorčuľovanie,Spojené štáty,2,2,1,5
+Rýchlokorčuľovanie,Kanada,1,1,3,5
+Rýchlokorčuľovanie,Nórsko,1,2,1,4
+Rýchlokorčuľovanie,Čína,1,0,2,3
+Rýchlokorčuľovanie,Japonsko,0,0,3,3
+Rýchlokorčuľovanie,Česko,1,1,0,2
+Rýchlokorčuľovanie,Dánsko,0,1,0,1
+Rýchlokorčuľovanie,Poľsko,0,1,0,1
