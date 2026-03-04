@@ -1,91 +1,94 @@
-Country,Gold,Silver,Bronze,Total
-Norway,18,12,11,41
-United States,12,12,9,33
-Italy,10,6,14,30
-Germany,8,10,8,26
-Austria,8,7,6,21
-France,7,6,8,21
-Netherlands,6,5,4,15
-Switzerland,5,6,6,17
-Sweden,4,6,3,13
-Canada,4,5,6,15
-Japan,3,4,5,12
-South Korea,3,3,2,8
-China,2,4,3,9
-Czech Republic,2,2,3,7
-Finland,2,1,4,7
-Slovenia,2,1,2,5
-Great Britain,1,2,2,5
-Latvia,1,1,1,3
-Poland,1,1,1,3
-Brazil,1,0,0,1
-Georgia,0,1,0,1
-Estonia,0,0,1,1
-Ukraine,0,0,1,1
-Australia,0,0,1,1
-Spain,0,0,1,1
-Kazakhstan,0,0,1,1
-Romania,0,0,1,1
-Bulgaria,0,0,1,1
-Slovakia,0,0,0,0
-Belgium,0,0,0,0
+country,gold,silver,bronze,total
+Nórsko,18,12,11,41
+Spojené štáty,12,12,9,33
+Taliansko,10,6,14,30
+Nemecko,8,10,8,26
+Japonsko,5,7,12,24
+Francúzsko,8,9,6,23
+Švajčiarsko,6,9,8,23
+Kanada,5,7,9,21
+Holandsko,10,7,3,20
+Rakúsko,5,8,5,18
+Švédsko,8,6,4,18
+Čína,5,4,6,15
+Južná Kórea,3,4,3,10
+Austrália,3,2,1,6
+Fínsko,0,1,5,6
+Veľká Británia,3,1,1,5
+Česko,2,2,1,5
+Poľsko,0,3,1,4
+Slovinsko,2,1,1,4
+Španielsko,1,0,2,3
+Nový Zéland,0,2,1,3
+Lotyšsko,0,1,1,2
+Bulharsko,0,0,2,2
+Belgicko,0,0,1,1
+Brazília,1,0,0,1
+Kazachstan,1,0,0,1
+Dánsko,0,1,0,1
+Estónsko,0,1,0,1
+Gruzínsko,0,1,0,1
+Neutrálni športovci,0,1,0,1
+Albánsko,0,0,0,0
 Andorra,0,0,0,0
-Argentina,0,0,0,0
-Armenia,0,0,0,0
-Azerbaijan,0,0,0,0
-Bosnia and Herzegovina,0,0,0,0
-Chile,0,0,0,0
-Chinese Taipei,0,0,0,0
-Colombia,0,0,0,0
-Croatia,0,0,0,0
-Cyprus,0,0,0,0
-Denmark,0,0,0,0
-Ecuador,0,0,0,0
-Greece,0,0,0,0
-Guatemala,0,0,0,0
-Hong Kong,0,0,0,0
-Hungary,0,0,0,0
-Iceland,0,0,0,0
-India,0,0,0,0
-Iran,0,0,0,0
-Ireland,0,0,0,0
-Israel,0,0,0,0
-Jamaica,0,0,0,0
-Kenya,0,0,0,0
-Kosovo,0,0,0,0
-Kyrgyzstan,0,0,0,0
-Lebanon,0,0,0,0
-Liechtenstein,0,0,0,0
-Lithuania,0,0,0,0
-Luxembourg,0,0,0,0
-Madagascar,0,0,0,0
-Malaysia,0,0,0,0
-Mexico,0,0,0,0
-Moldova,0,0,0,0
-Monaco,0,0,0,0
-Mongolia,0,0,0,0
-Montenegro,0,0,0,0
-Morocco,0,0,0,0
-New Zealand,0,0,0,0
-Nigeria,0,0,0,0
-North Macedonia,0,0,0,0
-Pakistan,0,0,0,0
-Peru,0,0,0,0
-Philippines,0,0,0,0
-Portugal,0,0,0,0
-San Marino,0,0,0,0
-Serbia,0,0,0,0
-Singapore,0,0,0,0
-Thailand,0,0,0,0
-Tonga,0,0,0,0
-Turkey,0,0,0,0
-United Arab Emirates,0,0,0,0
-Uzbekistan,0,0,0,0
-Venezuela,0,0,0,0
-Vietnam,0,0,0,0
-Albania,0,0,0,0
-Bolivia,0,0,0,0
+Argentína,0,0,0,0
+Arménsko,0,0,0,0
+Azerbajdžan,0,0,0,0
 Benin,0,0,0,0
+Bolívia,0,0,0,0
+Bosna a Hercegovina,0,0,0,0
+Čile,0,0,0,0
+Čínsky Tchaj-pej,0,0,0,0
+Kolumbia,0,0,0,0
+Chorvátsko,0,0,0,0
+Cyprus,0,0,0,0
+Ekvádor,0,0,0,0
+Eritrea,0,0,0,0
+Grécko,0,0,0,0
 Guinea-Bissau,0,0,0,0
 Haiti,0,0,0,0
-Ghana,0,0,0,0
+Hongkong,0,0,0,0
+Maďarsko,0,0,0,0
+Island,0,0,0,0
+India,0,0,0,0
+Írsko,0,0,0,0
+Irán,0,0,0,0
+Izrael,0,0,0,0
+Jamajka,0,0,0,0
+Keňa,0,0,0,0
+Saudská Arábia,0,0,0,0
+Kosovo,0,0,0,0
+Kirgizsko,0,0,0,0
+Libanon,0,0,0,0
+Lichtenštajnsko,0,0,0,0
+Litva,0,0,0,0
+Luxembursko,0,0,0,0
+Madagaskar,0,0,0,0
+Malajzia,0,0,0,0
+Malta,0,0,0,0
+Mexiko,0,0,0,0
+Monako,0,0,0,0
+Mongolsko,0,0,0,0
+Čierna Hora,0,0,0,0
+Maroko,0,0,0,0
+Nigéria,0,0,0,0
+Severné Macedónsko,0,0,0,0
+Pakistan,0,0,0,0
+Filipíny,0,0,0,0
+Portugalsko,0,0,0,0
+Portoriko,0,0,0,0
+Moldavsko,0,0,0,0
+Rumunsko,0,0,0,0
+San Maríno,0,0,0,0
+Srbsko,0,0,0,0
+Singapur,0,0,0,0
+Slovensko,0,0,0,0
+Južná Afrika,0,0,0,0
+Thajsko,0,0,0,0
+Trinidad a Tobago,0,0,0,0
+Turecko,0,0,0,0
+Ukrajina,0,0,0,0
+Spojené arabské emiráty,0,0,0,0
+Uruguaj,0,0,0,0
+Uzbekistan,0,0,0,0
+Venezuela,0,0,0,0
