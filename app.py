@@ -1,13 +1,12 @@
 
+import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-# =========================
-# Nastavenie stránky
-# =========================
-st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
+st.set_page_config(page_title="SOC Olympiada", layout="wide")
+
 st.title(" Inteligentná medailová analýza krajín – ZOH 2026")
 
 # =========================
