@@ -1,13 +1,14 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
+# =========================
+# Nastavenie stránky
+# =========================
 st.set_page_config(page_title="SOC Olympiada", layout="wide")
-
-st.title(" Inteligentná medailová analýza krajín – ZOH 2026")
+st.title("Inteligentná medailová analýza krajín – ZOH 2026")
 
 # =========================
 # Preklady športov
@@ -118,57 +119,33 @@ country_flags = {
 }
 
 # =========================
-# Režim + načítanie dát
-# =========================
-st.sidebar.header("⚙️ Nastavenia")
-mode = st.sidebar.radio("Režim:", ["Celkové medaily", "TOP 10 podľa športov"])
-
-if mode == "Celkové medaily":
-    data = pd.read_csv("olympics2026.csv")
-    selected_sport = None
-else:
-    sport_data = pd.read_csv("olympics2026_top10_by_sport.csv")
-
-    sport_data["sport"] = sport_data["sport"].astype(str).str.strip()
-    sport_data = sport_data[~sport_data["sport"].str.lower().str.contains("hockey")].copy()
-
-    sports_en = sorted(sport_data["sport"].unique().tolist())
-    sports_sk = [sport_translation.get(s.lower(), s) for s in sports_en]
-
-    selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
-    selected_sport = reverse_sport_translation.get(selected_sport_sk, selected_sport_sk).lower()
-
-    data = sport_data[sport_data["sport"].str.lower() == selected_sport].copy()
-
-# =========================
 # Doplnkové údaje
 # population = počet obyvateľov
 # sport_invest = približné ročné investície do športu v mil. €
 # =========================
 extra = {
-    "Spojené štáty": {"population": 331_000_000, "sport_invest": 30_000},
-    "Čína": {"population": 1_440_000_000, "sport_invest": 16_000},
+    "Spojené štáty": {"population": 331_000_000, "sport_invest": 30000},
+    "Čína": {"population": 1_440_000_000, "sport_invest": 16000},
     "Slovensko": {"population": 5_450_000, "sport_invest": 80},
-    "Nórsko": {"population": 5_400_000, "sport_invest": 1_200},
-    "Taliansko": {"population": 59_000_000, "sport_invest": 1_500},
-    "Nemecko": {"population": 83_000_000, "sport_invest": 2_500},
-    "Japonsko": {"population": 125_800_000, "sport_invest": 2_000},
-    "Francúzsko": {"population": 67_000_000, "sport_invest": 2_200},
+    "Nórsko": {"population": 5_400_000, "sport_invest": 1200},
+    "Taliansko": {"population": 59_000_000, "sport_invest": 1500},
+    "Nemecko": {"population": 83_000_000, "sport_invest": 2500},
+    "Japonsko": {"population": 125_800_000, "sport_invest": 2000},
+    "Francúzsko": {"population": 67_000_000, "sport_invest": 2200},
     "Švajčiarsko": {"population": 8_700_000, "sport_invest": 900},
-    "Kanada": {"population": 38_000_000, "sport_invest": 1_800},
+    "Kanada": {"population": 38_000_000, "sport_invest": 1800},
     "Holandsko": {"population": 17_400_000, "sport_invest": 800},
     "Švédsko": {"population": 10_400_000, "sport_invest": 700},
     "Rakúsko": {"population": 8_900_000, "sport_invest": 600},
-    "Južná Kórea": {"population": 52_000_000, "sport_invest": 1_000},
-    "Austrália": {"population": 26_000_000, "sport_invest": 1_200},
+    "Južná Kórea": {"population": 52_000_000, "sport_invest": 1000},
+    "Austrália": {"population": 26_000_000, "sport_invest": 1200},
     "Fínsko": {"population": 5_500_000, "sport_invest": 400},
     "Česko": {"population": 10_700_000, "sport_invest": 350},
-    "Veľká Británia": {"population": 67_000_000, "sport_invest": 2_500},
+    "Veľká Británia": {"population": 67_000_000, "sport_invest": 2500},
     "Slovinsko": {"population": 2_100_000, "sport_invest": 150},
     "Španielsko": {"population": 47_000_000, "sport_invest": 900},
-    "Brazília": {"population": 213_000_000, "sport_invest": 2_000},
+    "Brazília": {"population": 213_000_000, "sport_invest": 2000},
     "Kazachstan": {"population": 19_000_000, "sport_invest": 300},
-
     "Argentína": {"population": 45_800_000, "sport_invest": 180},
     "Bulharsko": {"population": 6_400_000, "sport_invest": 95},
     "Belgicko": {"population": 11_800_000, "sport_invest": 420},
@@ -246,12 +223,49 @@ for c in extra:
         extra[c]["sport_invest"] = extra[c]["sport_invest"] * USD_TO_EUR
 
 # =========================
+# Načítanie dát
+# =========================
+st.sidebar.header("⚙️ Nastavenia")
+mode = st.sidebar.radio("Režim:", ["Celkové medaily", "TOP 10 podľa športov"])
+
+if mode == "Celkové medaily":
+    data = pd.read_csv("olympics2026.csv").copy()
+else:
+    sport_data = pd.read_csv("olympics2026_top10_by_sport.csv").copy()
+
+    sport_data = sport_data.rename(columns={
+        "krajina": "country",
+        "zlato": "gold",
+        "striebro": "silver",
+        "bronz": "bronze",
+        "spolu": "total"
+    })
+
+    sport_data["sport"] = sport_data["sport"].astype(str).str.strip()
+    sport_data = sport_data[~sport_data["sport"].str.lower().str.contains("hokej")].copy()
+
+    sports_sk = sorted(sport_data["sport"].dropna().unique().tolist())
+    selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
+
+    data = sport_data[sport_data["sport"] == selected_sport_sk].copy()
+
+# bezpečné číselné typy
+for col in ["gold", "silver", "bronze", "total"]:
+    if col in data.columns:
+        data[col] = pd.to_numeric(data[col], errors="coerce").fillna(0)
+
+# =========================
 # Doplnenie údajov do dataframe
 # =========================
 data["population"] = data["country"].map(lambda c: extra.get(c, {}).get("population"))
 data["sport_invest"] = data["country"].map(lambda c: extra.get(c, {}).get("sport_invest"))
 data["flag"] = data["country"].map(lambda c: country_flags.get(c, "🏳️"))
+
+# Toto používaj v sidebare a tabuľke
 data["country_label"] = data["flag"] + " " + data["country"]
+
+# Toto používaj v grafe bez emoji
+data["country_plot"] = data["country"]
 
 # =========================
 # Výpočty metrík
@@ -271,7 +285,7 @@ data.loc[
 # =========================
 # Výber krajín + typ grafu
 # =========================
-all_country_labels = sorted(data["country_label"].unique().tolist())
+all_country_labels = sorted(data["country_label"].dropna().unique().tolist())
 
 default_labels = []
 for country in ["Spojené štáty", "Čína", "Slovensko"]:
@@ -279,10 +293,13 @@ for country in ["Spojené štáty", "Čína", "Slovensko"]:
     if not row.empty:
         default_labels.append(row.iloc[0]["country_label"])
 
+if mode == "TOP 10 podľa športov" and len(default_labels) == 0:
+    default_labels = all_country_labels[:3]
+
 chosen_labels = st.sidebar.multiselect(
     "Vyber krajiny na porovnanie:",
     all_country_labels,
-    default=default_labels
+    default=default_labels if default_labels else all_country_labels[:3]
 )
 
 chart_type = st.sidebar.selectbox(
@@ -313,15 +330,11 @@ metric = st.sidebar.selectbox(
 # =========================
 # Dropna podľa metriky
 # =========================
-if metric == " Počet medailí (spolu)":
-    pass
-elif metric == "⭐ Body (3-2-1)":
-    pass
-elif metric == " Medaily na 1 milión obyvateľov":
+if metric == " Medaily na 1 milión obyvateľov":
     filtered = filtered.dropna(subset=["medals_per_million"])
 elif metric == " Medaily na 1 milión € investícií":
     filtered = filtered.dropna(subset=["medals_per_invest"])
-else:
+elif metric == " Investície na 1 medailu (mil. €)":
     filtered = filtered.dropna(subset=["investment_per_medal"])
 
 if filtered.empty:
@@ -331,7 +344,7 @@ if filtered.empty:
 # =========================
 # Graf + Top N
 # =========================
-st.subheader(" Graf")
+st.subheader("Graf")
 
 count = len(filtered)
 if count == 1:
@@ -363,18 +376,15 @@ chart_df = chart_df.head(top_n)
 
 fig, ax = plt.subplots(figsize=(10, 5))
 
-# =========================
-# Graf: medaily spolu
-# =========================
 if metric == " Počet medailí (spolu)":
     if chart_type == "Skladaný ( spolu)":
-        ax.bar(chart_df["country_label"], chart_df["gold"], label=" Zlaté", color="#FFD700")
-        ax.bar(chart_df["country_label"], chart_df["silver"], bottom=chart_df["gold"], label=" Strieborné", color="#C0C0C0")
+        ax.bar(chart_df["country_plot"], chart_df["gold"], label="Zlaté", color="#FFD700")
+        ax.bar(chart_df["country_plot"], chart_df["silver"], bottom=chart_df["gold"], label="Strieborné", color="#C0C0C0")
         ax.bar(
-            chart_df["country_label"],
+            chart_df["country_plot"],
             chart_df["bronze"],
             bottom=chart_df["gold"] + chart_df["silver"],
-            label=" Bronzové",
+            label="Bronzové",
             color="#CD7F32"
         )
 
@@ -404,12 +414,12 @@ if metric == " Počet medailí (spolu)":
         bronze = chart_df["bronze"].to_numpy(dtype=float)
         total = chart_df["total"].to_numpy(dtype=float)
 
-        ax.bar(x - w, gold, w, label=" Zlaté", color="#FFD700")
-        ax.bar(x, silver, w, label=" Strieborné", color="#C0C0C0")
-        ax.bar(x + w, bronze, w, label=" Bronzové", color="#CD7F32")
+        ax.bar(x - w, gold, w, label="Zlaté", color="#FFD700")
+        ax.bar(x, silver, w, label="Strieborné", color="#C0C0C0")
+        ax.bar(x + w, bronze, w, label="Bronzové", color="#CD7F32")
 
         ax.set_xticks(x)
-        ax.set_xticklabels(chart_df["country_label"], rotation=35, ha="right")
+        ax.set_xticklabels(chart_df["country_plot"], rotation=35, ha="right")
 
         for i in range(len(chart_df)):
             top = max(gold[i], silver[i], bronze[i])
@@ -417,9 +427,6 @@ if metric == " Počet medailí (spolu)":
 
     ax.set_ylabel("Počet medailí", fontsize=11)
 
-# =========================
-# Graf: ostatné metriky
-# =========================
 else:
     if metric == "⭐ Body (3-2-1)":
         y = chart_df["points"]
@@ -438,7 +445,7 @@ else:
         ylabel = "Investície / 1 medailu (mil. €)"
         fmt = "{:.2f}"
 
-    ax.bar(chart_df["country_label"], y)
+    ax.bar(chart_df["country_plot"], y)
     plt.xticks(rotation=35, ha="right")
     ax.set_ylabel(ylabel, fontsize=11)
 
@@ -448,9 +455,6 @@ else:
     for i, val in enumerate(y.tolist()):
         ax.text(i, float(val) + pad, fmt.format(float(val)), ha="center", va="bottom", fontsize=9)
 
-# =========================
-# Štýl grafu
-# =========================
 ax.set_axisbelow(True)
 ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
@@ -460,24 +464,24 @@ if metric == " Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
 ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
 plt.tight_layout()
 st.pyplot(fig)
 
 # =========================
 # Tabuľka výsledkov
 # =========================
-st.subheader(" Analytická tabuľka")
+st.subheader("Analytická tabuľka")
 
 table_df = chart_df.copy()
-table_df = table_df.drop(columns=["country", "flag"], errors="ignore").rename(columns={"country_label": "Krajina"})
+table_df = table_df.drop(columns=["country", "flag", "country_plot"], errors="ignore")
+table_df = table_df.rename(columns={"country_label": "Krajina"})
 
 rename_columns = {
-    "gold": " Zlaté medaily",
-    "silver": " Strieborné medaily",
-    "bronze": " Bronzové medaily",
+    "gold": "Zlaté medaily",
+    "silver": "Strieborné medaily",
+    "bronze": "Bronzové medaily",
     "total": "Spolu medailí",
-    "points": "⭐ Body (3-2-1)",
+    "points": "Body (3-2-1)",
     "population": "Populácia",
     "sport_invest": "Investície do športu (mil. €)",
     "medals_per_million": "Medaily na 1 milión obyv.",
