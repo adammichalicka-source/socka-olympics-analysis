@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 # =========================
 # Nastavenie stránky
 # =========================
 st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
-st.title("🏅 Inteligentná medailová analýza krajín – ZOH 2026")
+st.title(" Inteligentná medailová analýza krajín – ZOH 2026")
 
 # =========================
 # Preklady EN → SK
@@ -44,10 +45,174 @@ country_translation = {
     "Kazakhstan": "Kazachstan",
     "Argentina": "Argentína",
     "Bulgaria": "Bulharsko",
+    "Belgium": "Belgicko",
+    "Denmark": "Dánsko",
+    "Estonia": "Estónsko",
+    "Latvia": "Lotyšsko",
+    "Poland": "Poľsko",
+    "Georgia": "Gruzínsko",
+    "New Zealand": "Nový Zéland",
+    "Hungary": "Maďarsko",
+    "Portugal": "Portugalsko",
+    "Romania": "Rumunsko",
+    "Croatia": "Chorvátsko",
+    "Serbia": "Srbsko",
+    "Ukraine": "Ukrajina",
+    "Turkey": "Turecko",
+    "Greece": "Grécko",
+    "Ireland": "Írsko",
+    "Lithuania": "Litva",
+    "Luxembourg": "Luxembursko",
+    "Israel": "Izrael",
+    "India": "India",
+    "Iran": "Irán",
+    "Mexico": "Mexiko",
+    "Colombia": "Kolumbia",
+    "South Africa": "Južná Afrika",
+    "Kenya": "Keňa",
+    "Jamaica": "Jamajka",
+    "Thailand": "Thajsko",
+    "Malaysia": "Malajzia",
+    "Singapore": "Singapur",
+    "Philippines": "Filipíny",
+    "Hong Kong": "Hongkong",
+    "Chinese Taipei": "Čínsky Tchaj-pej",
+    "Saudi Arabia": "Saudská Arábia",
+    "United Arab Emirates": "Spojené arabské emiráty",
+    "Uzbekistan": "Uzbekistan",
+    "Mongolia": "Mongolsko",
+    "Armenia": "Arménsko",
+    "Azerbaijan": "Azerbajdžan",
+    "Kyrgyzstan": "Kirgizsko",
+    "Moldova": "Moldavsko",
+    "Kosovo": "Kosovo",
+    "Cyprus": "Cyprus",
+    "Malta": "Malta",
+    "Iceland": "Island",
+    "Liechtenstein": "Lichtenštajnsko",
+    "Monaco": "Monako",
+    "San Marino": "San Maríno",
+    "Andorra": "Andorra",
+    "Albania": "Albánsko",
+    "Bosnia and Herzegovina": "Bosna a Hercegovina",
+    "Montenegro": "Čierna Hora",
+    "North Macedonia": "Severné Macedónsko",
+    "Chile": "Čile",
+    "Uruguay": "Uruguaj",
+    "Venezuela": "Venezuela",
+    "Ecuador": "Ekvádor",
+    "Bolivia": "Bolívia",
+    "Puerto Rico": "Portoriko",
+    "Pakistan": "Pakistan",
+    "Nigeria": "Nigéria",
+    "Benin": "Benin",
+    "Eritrea": "Eritrea",
+    "Guinea-Bissau": "Guinea-Bissau",
+    "Madagascar": "Madagaskar",
+    "Haiti": "Haiti",
+    "Lebanon": "Libanon",
+    "Neutral Athletes": "Neutrálni športovci",
 }
 
 reverse_country_translation = {v: k for k, v in country_translation.items()}
 reverse_sport_translation = {v: k for k, v in sport_translation.items()}
+
+# =========================
+# Vlajky
+# =========================
+country_flags = {
+    "United States": "🇺🇸",
+    "China": "🇨🇳",
+    "Slovakia": "🇸🇰",
+    "Norway": "🇳🇴",
+    "Italy": "🇮🇹",
+    "Germany": "🇩🇪",
+    "Japan": "🇯🇵",
+    "France": "🇫🇷",
+    "Switzerland": "🇨🇭",
+    "Canada": "🇨🇦",
+    "Netherlands": "🇳🇱",
+    "Sweden": "🇸🇪",
+    "Austria": "🇦🇹",
+    "South Korea": "🇰🇷",
+    "Australia": "🇦🇺",
+    "Finland": "🇫🇮",
+    "Czechia": "🇨🇿",
+    "Great Britain": "🇬🇧",
+    "Slovenia": "🇸🇮",
+    "Spain": "🇪🇸",
+    "Brazil": "🇧🇷",
+    "Kazakhstan": "🇰🇿",
+    "Argentina": "🇦🇷",
+    "Bulgaria": "🇧🇬",
+    "Belgium": "🇧🇪",
+    "Denmark": "🇩🇰",
+    "Estonia": "🇪🇪",
+    "Latvia": "🇱🇻",
+    "Poland": "🇵🇱",
+    "Georgia": "🇬🇪",
+    "New Zealand": "🇳🇿",
+    "Hungary": "🇭🇺",
+    "Portugal": "🇵🇹",
+    "Romania": "🇷🇴",
+    "Croatia": "🇭🇷",
+    "Serbia": "🇷🇸",
+    "Ukraine": "🇺🇦",
+    "Turkey": "🇹🇷",
+    "Greece": "🇬🇷",
+    "Ireland": "🇮🇪",
+    "Lithuania": "🇱🇹",
+    "Luxembourg": "🇱🇺",
+    "Israel": "🇮🇱",
+    "India": "🇮🇳",
+    "Iran": "🇮🇷",
+    "Mexico": "🇲🇽",
+    "Colombia": "🇨🇴",
+    "South Africa": "🇿🇦",
+    "Kenya": "🇰🇪",
+    "Jamaica": "🇯🇲",
+    "Thailand": "🇹🇭",
+    "Malaysia": "🇲🇾",
+    "Singapore": "🇸🇬",
+    "Philippines": "🇵🇭",
+    "Hong Kong": "🇭🇰",
+    "Chinese Taipei": "🇹🇼",
+    "Saudi Arabia": "🇸🇦",
+    "United Arab Emirates": "🇦🇪",
+    "Uzbekistan": "🇺🇿",
+    "Mongolia": "🇲🇳",
+    "Armenia": "🇦🇲",
+    "Azerbaijan": "🇦🇿",
+    "Kyrgyzstan": "🇰🇬",
+    "Moldova": "🇲🇩",
+    "Kosovo": "🇽🇰",
+    "Cyprus": "🇨🇾",
+    "Malta": "🇲🇹",
+    "Iceland": "🇮🇸",
+    "Liechtenstein": "🇱🇮",
+    "Monaco": "🇲🇨",
+    "San Marino": "🇸🇲",
+    "Andorra": "🇦🇩",
+    "Albania": "🇦🇱",
+    "Bosnia and Herzegovina": "🇧🇦",
+    "Montenegro": "🇲🇪",
+    "North Macedonia": "🇲🇰",
+    "Chile": "🇨🇱",
+    "Uruguay": "🇺🇾",
+    "Venezuela": "🇻🇪",
+    "Ecuador": "🇪🇨",
+    "Bolivia": "🇧🇴",
+    "Puerto Rico": "🇵🇷",
+    "Pakistan": "🇵🇰",
+    "Nigeria": "🇳🇬",
+    "Benin": "🇧🇯",
+    "Eritrea": "🇪🇷",
+    "Guinea-Bissau": "🇬🇼",
+    "Madagascar": "🇲🇬",
+    "Haiti": "🇭🇹",
+    "Lebanon": "🇱🇧",
+    "Neutral Athletes": "🏳️",
+}
 
 # =========================
 # 1) Režim + načítanie dát
@@ -61,26 +226,23 @@ if mode == "Celkové medaily":
 else:
     sport_data = pd.read_csv("olympics2026_top10_by_sport.csv")
 
-    # očistenie + poistka na hokej
     sport_data["sport"] = sport_data["sport"].astype(str).str.strip()
     sport_data = sport_data[~sport_data["sport"].str.lower().str.contains("hockey")].copy()
 
     sports_en = sorted(sport_data["sport"].unique().tolist())
-
-    # zobraz športy po slovensky
     sports_sk = [sport_translation.get(s.lower(), s) for s in sports_en]
     selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
 
-    # späť na EN pre filtrovanie
     selected_sport = reverse_sport_translation.get(selected_sport_sk, selected_sport_sk).lower()
-
     data = sport_data[sport_data["sport"].str.lower() == selected_sport].copy()
 
 # =========================
-# 2) Doplnkové údaje (populácia + investície)
+# 2) Doplnkové údaje
+# population = počet obyvateľov
+# sport_invest = približné ročné investície do športu v mil. €
 # =========================
 extra = {
-    "United States": {"population": 331_000_000, "sport_invest": 30_000},  # mil. USD/rok (odhad)
+    "United States": {"population": 331_000_000, "sport_invest": 30_000},
     "China": {"population": 1_440_000_000, "sport_invest": 16_000},
     "Slovakia": {"population": 5_450_000, "sport_invest": 80},
     "Norway": {"population": 5_400_000, "sport_invest": 1_200},
@@ -102,6 +264,76 @@ extra = {
     "Spain": {"population": 47_000_000, "sport_invest": 900},
     "Brazil": {"population": 213_000_000, "sport_invest": 2_000},
     "Kazakhstan": {"population": 19_000_000, "sport_invest": 300},
+
+    "Argentina": {"population": 45_800_000, "sport_invest": 180},
+    "Bulgaria": {"population": 6_400_000, "sport_invest": 95},
+    "Belgium": {"population": 11_800_000, "sport_invest": 420},
+    "Denmark": {"population": 6_000_000, "sport_invest": 300},
+    "Estonia": {"population": 1_370_000, "sport_invest": 70},
+    "Latvia": {"population": 1_870_000, "sport_invest": 75},
+    "Poland": {"population": 37_500_000, "sport_invest": 320},
+    "Georgia": {"population": 3_700_000, "sport_invest": 85},
+    "New Zealand": {"population": 5_300_000, "sport_invest": 300},
+    "Hungary": {"population": 9_600_000, "sport_invest": 260},
+    "Portugal": {"population": 10_400_000, "sport_invest": 150},
+    "Romania": {"population": 19_000_000, "sport_invest": 170},
+    "Croatia": {"population": 3_900_000, "sport_invest": 95},
+    "Serbia": {"population": 6_600_000, "sport_invest": 110},
+    "Ukraine": {"population": 37_000_000, "sport_invest": 140},
+    "Turkey": {"population": 86_000_000, "sport_invest": 300},
+    "Greece": {"population": 10_400_000, "sport_invest": 250},
+    "Ireland": {"population": 5_300_000, "sport_invest": 170},
+    "Lithuania": {"population": 2_900_000, "sport_invest": 85},
+    "Luxembourg": {"population": 680_000, "sport_invest": 40},
+    "Israel": {"population": 9_900_000, "sport_invest": 240},
+    "India": {"population": 1_430_000_000, "sport_invest": 900},
+    "Iran": {"population": 89_000_000, "sport_invest": 220},
+    "Mexico": {"population": 129_000_000, "sport_invest": 260},
+    "Colombia": {"population": 53_000_000, "sport_invest": 130},
+    "South Africa": {"population": 63_000_000, "sport_invest": 180},
+    "Kenya": {"population": 55_000_000, "sport_invest": 90},
+    "Jamaica": {"population": 2_800_000, "sport_invest": 65},
+    "Thailand": {"population": 71_000_000, "sport_invest": 140},
+    "Malaysia": {"population": 35_000_000, "sport_invest": 150},
+    "Singapore": {"population": 6_000_000, "sport_invest": 260},
+    "Philippines": {"population": 115_000_000, "sport_invest": 120},
+    "Hong Kong": {"population": 7_500_000, "sport_invest": 180},
+    "Chinese Taipei": {"population": 23_500_000, "sport_invest": 260},
+    "Saudi Arabia": {"population": 38_000_000, "sport_invest": 350},
+    "United Arab Emirates": {"population": 10_200_000, "sport_invest": 280},
+    "Uzbekistan": {"population": 37_000_000, "sport_invest": 110},
+    "Mongolia": {"population": 3_500_000, "sport_invest": 30},
+    "Armenia": {"population": 2_800_000, "sport_invest": 40},
+    "Azerbaijan": {"population": 10_400_000, "sport_invest": 110},
+    "Kyrgyzstan": {"population": 7_200_000, "sport_invest": 22},
+    "Moldova": {"population": 2_500_000, "sport_invest": 20},
+    "Kosovo": {"population": 1_600_000, "sport_invest": 18},
+    "Cyprus": {"population": 1_300_000, "sport_invest": 30},
+    "Malta": {"population": 560_000, "sport_invest": 18},
+    "Iceland": {"population": 390_000, "sport_invest": 45},
+    "Liechtenstein": {"population": 40_000, "sport_invest": 10},
+    "Monaco": {"population": 39_000, "sport_invest": 22},
+    "San Marino": {"population": 34_000, "sport_invest": 5},
+    "Andorra": {"population": 82_000, "sport_invest": 12},
+    "Albania": {"population": 2_800_000, "sport_invest": 35},
+    "Bosnia and Herzegovina": {"population": 3_200_000, "sport_invest": 28},
+    "Montenegro": {"population": 620_000, "sport_invest": 20},
+    "North Macedonia": {"population": 1_820_000, "sport_invest": 15},
+    "Chile": {"population": 19_700_000, "sport_invest": 90},
+    "Uruguay": {"population": 3_400_000, "sport_invest": 55},
+    "Venezuela": {"population": 28_500_000, "sport_invest": 65},
+    "Ecuador": {"population": 18_400_000, "sport_invest": 55},
+    "Bolivia": {"population": 12_500_000, "sport_invest": 22},
+    "Puerto Rico": {"population": 3_200_000, "sport_invest": 55},
+    "Pakistan": {"population": 247_000_000, "sport_invest": 60},
+    "Nigeria": {"population": 229_000_000, "sport_invest": 140},
+    "Benin": {"population": 14_000_000, "sport_invest": 18},
+    "Eritrea": {"population": 3_700_000, "sport_invest": 8},
+    "Guinea-Bissau": {"population": 2_200_000, "sport_invest": 4},
+    "Madagascar": {"population": 31_000_000, "sport_invest": 15},
+    "Haiti": {"population": 11_700_000, "sport_invest": 8},
+    "Lebanon": {"population": 5_500_000, "sport_invest": 25},
+    "Neutral Athletes": {"population": None, "sport_invest": None},
 }
 
 USD_TO_EUR = 0.92
@@ -110,44 +342,140 @@ for c in extra:
         extra[c]["sport_invest"] = extra[c]["sport_invest"] * USD_TO_EUR
 
 # =========================
-# 3) Doplň stĺpce population a sport_invest + SK názvy
+# 2A) Slovenské názvy z CSV -> EN názvy kľúčov
+# =========================
+country_name_aliases = {
+    "Spojené štáty": "United States",
+    "Čína": "China",
+    "Slovensko": "Slovakia",
+    "Nórsko": "Norway",
+    "Taliansko": "Italy",
+    "Nemecko": "Germany",
+    "Japonsko": "Japan",
+    "Francúzsko": "France",
+    "Švajčiarsko": "Switzerland",
+    "Kanada": "Canada",
+    "Holandsko": "Netherlands",
+    "Švédsko": "Sweden",
+    "Rakúsko": "Austria",
+    "Južná Kórea": "South Korea",
+    "Austrália": "Australia",
+    "Fínsko": "Finland",
+    "Česko": "Czechia",
+    "Veľká Británia": "Great Britain",
+    "Slovinsko": "Slovenia",
+    "Španielsko": "Spain",
+    "Brazília": "Brazil",
+    "Kazachstan": "Kazakhstan",
+    "Argentína": "Argentina",
+    "Bulharsko": "Bulgaria",
+    "Belgicko": "Belgium",
+    "Dánsko": "Denmark",
+    "Estónsko": "Estonia",
+    "Lotyšsko": "Latvia",
+    "Poľsko": "Poland",
+    "Gruzínsko": "Georgia",
+    "Nový Zéland": "New Zealand",
+    "Maďarsko": "Hungary",
+    "Portugalsko": "Portugal",
+    "Rumunsko": "Romania",
+    "Chorvátsko": "Croatia",
+    "Srbsko": "Serbia",
+    "Ukrajina": "Ukraine",
+    "Turecko": "Turkey",
+    "Grécko": "Greece",
+    "Írsko": "Ireland",
+    "Litva": "Lithuania",
+    "Luxembursko": "Luxembourg",
+    "Izrael": "Israel",
+    "India": "India",
+    "Irán": "Iran",
+    "Mexiko": "Mexico",
+    "Kolumbia": "Colombia",
+    "Južná Afrika": "South Africa",
+    "Keňa": "Kenya",
+    "Jamajka": "Jamaica",
+    "Thajsko": "Thailand",
+    "Malajzia": "Malaysia",
+    "Singapur": "Singapore",
+    "Filipíny": "Philippines",
+    "Hongkong": "Hong Kong",
+    "Čínsky Tchaj-pej": "Chinese Taipei",
+    "Saudská Arábia": "Saudi Arabia",
+    "Spojené arabské emiráty": "United Arab Emirates",
+    "Mongolsko": "Mongolia",
+    "Arménsko": "Armenia",
+    "Azerbajdžan": "Azerbaijan",
+    "Kirgizsko": "Kyrgyzstan",
+    "Moldavsko": "Moldova",
+    "Čierna Hora": "Montenegro",
+    "Severné Macedónsko": "North Macedonia",
+    "Čile": "Chile",
+    "Uruguaj": "Uruguay",
+    "Venezuela": "Venezuela",
+    "Ekvádor": "Ecuador",
+    "Bolívia": "Bolivia",
+    "Portoriko": "Puerto Rico",
+    "Nigéria": "Nigeria",
+    "Madagaskar": "Madagascar",
+    "Libanon": "Lebanon",
+    "Neutrálni športovci": "Neutral Athletes",
+}
+
+data["country"] = data["country"].replace(country_name_aliases)
+
+# =========================
+# 3) Doplň stĺpce population + sport_invest + SK názvy + vlajky
 # =========================
 data["population"] = data["country"].map(lambda c: extra.get(c, {}).get("population"))
 data["sport_invest"] = data["country"].map(lambda c: extra.get(c, {}).get("sport_invest"))
-
-# slovenské mená krajín pre UI
 data["country_sk"] = data["country"].map(lambda c: country_translation.get(c, c))
+data["flag"] = data["country"].map(lambda c: country_flags.get(c, "🏳️"))
+data["country_label"] = data["flag"] + " " + data["country_sk"]
 
 # =========================
 # 4) Výpočty
 # =========================
 data["points"] = data["gold"] * 3 + data["silver"] * 2 + data["bronze"]
 data["medals_per_million"] = data["total"] / (data["population"] / 1_000_000)
-data["medals_per_invest"] = data["total"] / data["sport_invest"]  # medaily na 1 mil. € investícií
+data["medals_per_invest"] = data["total"] / data["sport_invest"]
+data["investment_per_medal"] = data["sport_invest"] / data["total"]
 
 data.loc[data["sport_invest"].isna() | (data["sport_invest"] == 0), "medals_per_invest"] = None
 data.loc[data["population"].isna() | (data["population"] == 0), "medals_per_million"] = None
+data.loc[
+    data["sport_invest"].isna() | data["total"].isna() | (data["total"] == 0),
+    "investment_per_medal"
+] = None
 
 # =========================
 # 5) UI – výber krajín + typ grafu
 # =========================
-all_countries_sk = sorted(data["country_sk"].unique().tolist())
-default_sk = [country_translation.get(c, c) for c in ["United States", "China", "Slovakia"] if country_translation.get(c, c) in all_countries_sk]
+all_country_labels = sorted(data["country_label"].unique().tolist())
 
-chosen_sk = st.sidebar.multiselect("Vyber krajiny na porovnanie:", all_countries_sk, default=default_sk)
+default_en = ["United States", "China", "Slovakia"]
+default_labels = []
+for c in default_en:
+    row = data[data["country"] == c]
+    if not row.empty:
+        default_labels.append(row.iloc[0]["country_label"])
+
+chosen_labels = st.sidebar.multiselect(
+    "Vyber krajiny na porovnanie:",
+    all_country_labels,
+    default=default_labels
+)
 
 chart_type = st.sidebar.selectbox(
     "Typ grafu:",
     ["Skladaný ( spolu)", "Skupinový ( vedľa seba)"]
 )
 
-if not chosen_sk:
+if not chosen_labels:
     st.warning("Vyber aspoň jednu krajinu.")
     st.stop()
 
-# späť na EN kľúč pre filtrovanie
-chosen_en = [reverse_country_translation.get(c, c) for c in chosen_sk]
-filtered = data[data["country"].isin(chosen_en)].copy()
+filtered = data[data["country_label"].isin(chosen_labels)].copy()
 
 # =========================
 # 6) UI – výber metriky
@@ -155,34 +483,36 @@ filtered = data[data["country"].isin(chosen_en)].copy()
 metric = st.sidebar.selectbox(
     "Vyber metriku porovnania:",
     [
-        "🏅 Počet medailí (spolu)",
+        " Počet medailí (spolu)",
         "⭐ Body (3-2-1)",
-        "🌍 Medaily na 1 milión obyvateľov",
-        "💶 Medaily na 1 milión € investícií",
+        " Medaily na 1 milión obyvateľov",
+        " Medaily na 1 milión € investícií",
+        " Investície na 1 medailu (mil. €)",
     ]
 )
 
 # =========================
 # 7) Príprava + dropna podľa metriky
 # =========================
-if metric == "🏅 Počet medailí (spolu)":
+if metric == " Počet medailí (spolu)":
     pass
 elif metric == "⭐ Body (3-2-1)":
     pass
-elif metric == "🌍 Medaily na 1 milión obyvateľov":
+elif metric == " Medaily na 1 milión obyvateľov":
     filtered = filtered.dropna(subset=["medals_per_million"])
-else:
+elif metric == " Medaily na 1 milión € investícií":
     filtered = filtered.dropna(subset=["medals_per_invest"])
+else:
+    filtered = filtered.dropna(subset=["investment_per_medal"])
 
-# ak po dropna nezostalo nič -> stop (fix slider error)
 if filtered.empty:
     st.warning("Pre zvolenú metriku nemajú vybrané krajiny potrebné údaje (populácia/investície).")
     st.stop()
 
 # =========================
-# 8) Graf + Top N (opravené)
+# 8) Graf + Top N
 # =========================
-st.subheader("📊 Graf")
+st.subheader(" Graf")
 
 count = len(filtered)
 if count == 1:
@@ -197,35 +527,35 @@ else:
         value=default_n,
     )
 
-# zoradenie podľa metriky
 chart_df = filtered.copy()
-if metric == "🏅 Počet medailí (spolu)":
+
+if metric == " Počet medailí (spolu)":
     chart_df = chart_df.sort_values("total", ascending=False)
 elif metric == "⭐ Body (3-2-1)":
     chart_df = chart_df.sort_values("points", ascending=False)
-elif metric == "🌍 Medaily na 1 milión obyvateľov":
+elif metric == " Medaily na 1 milión obyvateľov":
     chart_df = chart_df.sort_values("medals_per_million", ascending=False)
-else:
+elif metric == " Medaily na 1 milión € investícií":
     chart_df = chart_df.sort_values("medals_per_invest", ascending=False)
+else:
+    chart_df = chart_df.sort_values("investment_per_medal", ascending=True)
 
 chart_df = chart_df.head(top_n)
 
 fig, ax = plt.subplots(figsize=(10, 5))
 
-# --- A) Medaily spolu: stacked/grouped ---
-if metric == "🏅 Počet medailí (spolu)":
+if metric == " Počet medailí (spolu)":
     if chart_type == "Skladaný ( spolu)":
-        ax.bar(chart_df["country_sk"], chart_df["gold"], label="🥇 Zlaté", color="#FFD700")
-        ax.bar(chart_df["country_sk"], chart_df["silver"], bottom=chart_df["gold"], label="🥈 Strieborné", color="#C0C0C0")
+        ax.bar(chart_df["country_label"], chart_df["gold"], label=" Zlaté", color="#FFD700")
+        ax.bar(chart_df["country_label"], chart_df["silver"], bottom=chart_df["gold"], label=" Strieborné", color="#C0C0C0")
         ax.bar(
-            chart_df["country_sk"],
+            chart_df["country_label"],
             chart_df["bronze"],
             bottom=chart_df["gold"] + chart_df["silver"],
-            label="🥉 Bronzové",
+            label=" Bronzové",
             color="#CD7F32"
         )
 
-        # čísla vnútri + total hore
         for i in range(len(chart_df)):
             g = int(chart_df.iloc[i]["gold"])
             s = int(chart_df.iloc[i]["silver"])
@@ -244,7 +574,6 @@ if metric == "🏅 Počet medailí (spolu)":
         plt.xticks(rotation=35, ha="right")
 
     else:
-        # Skupinový (vedľa seba) – FIX: total nad najvyšší stĺpec
         x = np.arange(len(chart_df))
         w = 0.25
 
@@ -253,79 +582,78 @@ if metric == "🏅 Počet medailí (spolu)":
         bronze = chart_df["bronze"].to_numpy(dtype=float)
         total = chart_df["total"].to_numpy(dtype=float)
 
-        ax.bar(x - w, gold, w, label="🥇 Zlaté", color="#FFD700")
-        ax.bar(x,     silver, w, label="🥈 Strieborné", color="#C0C0C0")
-        ax.bar(x + w, bronze, w, label="🥉 Bronzové", color="#CD7F32")
+        ax.bar(x - w, gold, w, label=" Zlaté", color="#FFD700")
+        ax.bar(x, silver, w, label=" Strieborné", color="#C0C0C0")
+        ax.bar(x + w, bronze, w, label=" Bronzové", color="#CD7F32")
 
         ax.set_xticks(x)
-        ax.set_xticklabels(chart_df["country_sk"], rotation=35, ha="right")
+        ax.set_xticklabels(chart_df["country_label"], rotation=35, ha="right")
 
         for i in range(len(chart_df)):
             top = max(gold[i], silver[i], bronze[i])
             ax.text(i, top + 0.3, str(int(total[i])), ha="center", va="bottom", fontsize=10, fontweight="bold")
 
-        ax.set_ylabel("Počet medailí", fontsize=11)
+    ax.set_ylabel("Počet medailí", fontsize=11)
 
-# --- B) Ostatné metriky: 1 stĺpec na krajinu ---
 else:
     if metric == "⭐ Body (3-2-1)":
         y = chart_df["points"]
         ylabel = "Body"
         fmt = "{:.0f}"
-    elif metric == "🌍 Medaily na 1 milión obyvateľov":
+    elif metric == " Medaily na 1 milión obyvateľov":
         y = chart_df["medals_per_million"]
         ylabel = "Medaily / 1 milión obyvateľov"
         fmt = "{:.3f}"
-    else:
+    elif metric == " Medaily na 1 milión € investícií":
         y = chart_df["medals_per_invest"]
         ylabel = "Medaily / 1 milión € investícií"
         fmt = "{:.4f}"
+    else:
+        y = chart_df["investment_per_medal"]
+        ylabel = "Investície / 1 medailu (mil. €)"
+        fmt = "{:.2f}"
 
-    ax.bar(chart_df["country_sk"], y)
+    ax.bar(chart_df["country_label"], y)
     plt.xticks(rotation=35, ha="right")
     ax.set_ylabel(ylabel, fontsize=11)
 
     y_max = float(y.max()) if len(y) else 0
     pad = y_max * 0.02 if y_max > 0 else 0.1
+
     for i, val in enumerate(y.tolist()):
         ax.text(i, float(val) + pad, fmt.format(float(val)), ha="center", va="bottom", fontsize=9)
 
-# štýl
 ax.set_axisbelow(True)
 ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-# legenda len pri medailách
-if metric == "🏅 Počet medailí (spolu)":
+if metric == " Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
-    from matplotlib.ticker import MaxNLocator
-ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
-
+ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 plt.tight_layout()
 st.pyplot(fig)
 
 # =========================
-# 9) Tabuľka výsledkov (so slovenskými názvami)
+# 9) Tabuľka výsledkov
 # =========================
-st.subheader("📋 Analytická tabuľka")
+st.subheader(" Analytická tabuľka")
 
 table_df = chart_df.copy()
-
-# v tabuľke nech je názov krajiny po slovensky
-table_df = table_df.drop(columns=["country"], errors="ignore").rename(columns={"country_sk": "Krajina"})
+table_df = table_df.drop(columns=["country", "country_sk", "flag"], errors="ignore").rename(columns={"country_label": "Krajina"})
 
 rename_columns = {
-    "gold": "🥇 Zlaté medaily",
-    "silver": "🥈 Strieborné medaily",
-    "bronze": "🥉 Bronzové medaily",
+    "gold": " Zlaté medaily",
+    "silver": " Strieborné medaily",
+    "bronze": " Bronzové medaily",
     "total": "Spolu medailí",
     "points": "⭐ Body (3-2-1)",
     "population": "Populácia",
     "sport_invest": "Investície do športu (mil. €)",
     "medals_per_million": "Medaily na 1 milión obyv.",
     "medals_per_invest": "Medaily na 1 milión €",
+    "investment_per_medal": "Investície na 1 medailu (mil. €)",
 }
 
 table_df = table_df.rename(columns={k: v for k, v in rename_columns.items() if k in table_df.columns})
@@ -336,6 +664,8 @@ if "Medaily na 1 milión obyv." in table_df.columns:
 if "Medaily na 1 milión €" in table_df.columns:
     table_df["Medaily na 1 milión €"] = table_df["Medaily na 1 milión €"].round(4)
 
+if "Investície na 1 medailu (mil. €)" in table_df.columns:
+    table_df["Investície na 1 medailu (mil. €)"] = table_df["Investície na 1 medailu (mil. €)"].round(2)
+
 table_df = table_df.reset_index(drop=True)
 st.dataframe(table_df, use_container_width=True)
-
