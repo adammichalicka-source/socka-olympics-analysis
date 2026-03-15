@@ -1,4 +1,4 @@
-import streamlit as st
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,211 +11,115 @@ st.set_page_config(page_title="SOČ Olympiáda", layout="wide")
 st.title(" Inteligentná medailová analýza krajín – ZOH 2026")
 
 # =========================
-# Preklady EN → SK
+# Preklady športov
 # =========================
 sport_translation = {
     "biathlon": "Biatlon",
     "skating": "Korčuľovanie",
     "skiing": "Lyžovanie",
-    # hockey úmyselne nedávame
 }
 
-country_translation = {
-    "United States": "Spojené štáty",
-    "China": "Čína",
-    "Slovakia": "Slovensko",
-    "Norway": "Nórsko",
-    "Italy": "Taliansko",
-    "Germany": "Nemecko",
-    "Japan": "Japonsko",
-    "France": "Francúzsko",
-    "Switzerland": "Švajčiarsko",
-    "Canada": "Kanada",
-    "Netherlands": "Holandsko",
-    "Sweden": "Švédsko",
-    "Austria": "Rakúsko",
-    "South Korea": "Južná Kórea",
-    "Australia": "Austrália",
-    "Finland": "Fínsko",
-    "Czechia": "Česko",
-    "Great Britain": "Veľká Británia",
-    "Slovenia": "Slovinsko",
-    "Spain": "Španielsko",
-    "Brazil": "Brazília",
-    "Kazakhstan": "Kazachstan",
-    "Argentina": "Argentína",
-    "Bulgaria": "Bulharsko",
-    "Belgium": "Belgicko",
-    "Denmark": "Dánsko",
-    "Estonia": "Estónsko",
-    "Latvia": "Lotyšsko",
-    "Poland": "Poľsko",
-    "Georgia": "Gruzínsko",
-    "New Zealand": "Nový Zéland",
-    "Hungary": "Maďarsko",
-    "Portugal": "Portugalsko",
-    "Romania": "Rumunsko",
-    "Croatia": "Chorvátsko",
-    "Serbia": "Srbsko",
-    "Ukraine": "Ukrajina",
-    "Turkey": "Turecko",
-    "Greece": "Grécko",
-    "Ireland": "Írsko",
-    "Lithuania": "Litva",
-    "Luxembourg": "Luxembursko",
-    "Israel": "Izrael",
-    "India": "India",
-    "Iran": "Irán",
-    "Mexico": "Mexiko",
-    "Colombia": "Kolumbia",
-    "South Africa": "Južná Afrika",
-    "Kenya": "Keňa",
-    "Jamaica": "Jamajka",
-    "Thailand": "Thajsko",
-    "Malaysia": "Malajzia",
-    "Singapore": "Singapur",
-    "Philippines": "Filipíny",
-    "Hong Kong": "Hongkong",
-    "Chinese Taipei": "Čínsky Tchaj-pej",
-    "Saudi Arabia": "Saudská Arábia",
-    "United Arab Emirates": "Spojené arabské emiráty",
-    "Uzbekistan": "Uzbekistan",
-    "Mongolia": "Mongolsko",
-    "Armenia": "Arménsko",
-    "Azerbaijan": "Azerbajdžan",
-    "Kyrgyzstan": "Kirgizsko",
-    "Moldova": "Moldavsko",
-    "Kosovo": "Kosovo",
-    "Cyprus": "Cyprus",
-    "Malta": "Malta",
-    "Iceland": "Island",
-    "Liechtenstein": "Lichtenštajnsko",
-    "Monaco": "Monako",
-    "San Marino": "San Maríno",
-    "Andorra": "Andorra",
-    "Albania": "Albánsko",
-    "Bosnia and Herzegovina": "Bosna a Hercegovina",
-    "Montenegro": "Čierna Hora",
-    "North Macedonia": "Severné Macedónsko",
-    "Chile": "Čile",
-    "Uruguay": "Uruguaj",
-    "Venezuela": "Venezuela",
-    "Ecuador": "Ekvádor",
-    "Bolivia": "Bolívia",
-    "Puerto Rico": "Portoriko",
-    "Pakistan": "Pakistan",
-    "Nigeria": "Nigéria",
-    "Benin": "Benin",
-    "Eritrea": "Eritrea",
-    "Guinea-Bissau": "Guinea-Bissau",
-    "Madagascar": "Madagaskar",
-    "Haiti": "Haiti",
-    "Lebanon": "Libanon",
-    "Neutral Athletes": "Neutrálni športovci",
-}
-
-reverse_country_translation = {v: k for k, v in country_translation.items()}
 reverse_sport_translation = {v: k for k, v in sport_translation.items()}
 
 # =========================
-# Vlajky
+# Vlajky krajín
 # =========================
 country_flags = {
-    "United States": "🇺🇸",
-    "China": "🇨🇳",
-    "Slovakia": "🇸🇰",
-    "Norway": "🇳🇴",
-    "Italy": "🇮🇹",
-    "Germany": "🇩🇪",
-    "Japan": "🇯🇵",
-    "France": "🇫🇷",
-    "Switzerland": "🇨🇭",
-    "Canada": "🇨🇦",
-    "Netherlands": "🇳🇱",
-    "Sweden": "🇸🇪",
-    "Austria": "🇦🇹",
-    "South Korea": "🇰🇷",
-    "Australia": "🇦🇺",
-    "Finland": "🇫🇮",
-    "Czechia": "🇨🇿",
-    "Great Britain": "🇬🇧",
-    "Slovenia": "🇸🇮",
-    "Spain": "🇪🇸",
-    "Brazil": "🇧🇷",
-    "Kazakhstan": "🇰🇿",
-    "Argentina": "🇦🇷",
-    "Bulgaria": "🇧🇬",
-    "Belgium": "🇧🇪",
-    "Denmark": "🇩🇰",
-    "Estonia": "🇪🇪",
-    "Latvia": "🇱🇻",
-    "Poland": "🇵🇱",
-    "Georgia": "🇬🇪",
-    "New Zealand": "🇳🇿",
-    "Hungary": "🇭🇺",
-    "Portugal": "🇵🇹",
-    "Romania": "🇷🇴",
-    "Croatia": "🇭🇷",
-    "Serbia": "🇷🇸",
-    "Ukraine": "🇺🇦",
-    "Turkey": "🇹🇷",
-    "Greece": "🇬🇷",
-    "Ireland": "🇮🇪",
-    "Lithuania": "🇱🇹",
-    "Luxembourg": "🇱🇺",
-    "Israel": "🇮🇱",
+    "Spojené štáty": "🇺🇸",
+    "Čína": "🇨🇳",
+    "Slovensko": "🇸🇰",
+    "Nórsko": "🇳🇴",
+    "Taliansko": "🇮🇹",
+    "Nemecko": "🇩🇪",
+    "Japonsko": "🇯🇵",
+    "Francúzsko": "🇫🇷",
+    "Švajčiarsko": "🇨🇭",
+    "Kanada": "🇨🇦",
+    "Holandsko": "🇳🇱",
+    "Švédsko": "🇸🇪",
+    "Rakúsko": "🇦🇹",
+    "Južná Kórea": "🇰🇷",
+    "Austrália": "🇦🇺",
+    "Fínsko": "🇫🇮",
+    "Česko": "🇨🇿",
+    "Veľká Británia": "🇬🇧",
+    "Slovinsko": "🇸🇮",
+    "Španielsko": "🇪🇸",
+    "Brazília": "🇧🇷",
+    "Kazachstan": "🇰🇿",
+    "Argentína": "🇦🇷",
+    "Bulharsko": "🇧🇬",
+    "Belgicko": "🇧🇪",
+    "Dánsko": "🇩🇰",
+    "Estónsko": "🇪🇪",
+    "Lotyšsko": "🇱🇻",
+    "Poľsko": "🇵🇱",
+    "Gruzínsko": "🇬🇪",
+    "Nový Zéland": "🇳🇿",
+    "Maďarsko": "🇭🇺",
+    "Portugalsko": "🇵🇹",
+    "Rumunsko": "🇷🇴",
+    "Chorvátsko": "🇭🇷",
+    "Srbsko": "🇷🇸",
+    "Ukrajina": "🇺🇦",
+    "Turecko": "🇹🇷",
+    "Grécko": "🇬🇷",
+    "Írsko": "🇮🇪",
+    "Litva": "🇱🇹",
+    "Luxembursko": "🇱🇺",
+    "Izrael": "🇮🇱",
     "India": "🇮🇳",
-    "Iran": "🇮🇷",
-    "Mexico": "🇲🇽",
-    "Colombia": "🇨🇴",
-    "South Africa": "🇿🇦",
-    "Kenya": "🇰🇪",
-    "Jamaica": "🇯🇲",
-    "Thailand": "🇹🇭",
-    "Malaysia": "🇲🇾",
-    "Singapore": "🇸🇬",
-    "Philippines": "🇵🇭",
-    "Hong Kong": "🇭🇰",
-    "Chinese Taipei": "🇹🇼",
-    "Saudi Arabia": "🇸🇦",
-    "United Arab Emirates": "🇦🇪",
+    "Irán": "🇮🇷",
+    "Mexiko": "🇲🇽",
+    "Kolumbia": "🇨🇴",
+    "Južná Afrika": "🇿🇦",
+    "Keňa": "🇰🇪",
+    "Jamajka": "🇯🇲",
+    "Thajsko": "🇹🇭",
+    "Malajzia": "🇲🇾",
+    "Singapur": "🇸🇬",
+    "Filipíny": "🇵🇭",
+    "Hongkong": "🇭🇰",
+    "Čínsky Tchaj-pej": "🇹🇼",
+    "Saudská Arábia": "🇸🇦",
+    "Spojené arabské emiráty": "🇦🇪",
     "Uzbekistan": "🇺🇿",
-    "Mongolia": "🇲🇳",
-    "Armenia": "🇦🇲",
-    "Azerbaijan": "🇦🇿",
-    "Kyrgyzstan": "🇰🇬",
-    "Moldova": "🇲🇩",
+    "Mongolsko": "🇲🇳",
+    "Arménsko": "🇦🇲",
+    "Azerbajdžan": "🇦🇿",
+    "Kirgizsko": "🇰🇬",
+    "Moldavsko": "🇲🇩",
     "Kosovo": "🇽🇰",
     "Cyprus": "🇨🇾",
     "Malta": "🇲🇹",
-    "Iceland": "🇮🇸",
-    "Liechtenstein": "🇱🇮",
-    "Monaco": "🇲🇨",
-    "San Marino": "🇸🇲",
+    "Island": "🇮🇸",
+    "Lichtenštajnsko": "🇱🇮",
+    "Monako": "🇲🇨",
+    "San Maríno": "🇸🇲",
     "Andorra": "🇦🇩",
-    "Albania": "🇦🇱",
-    "Bosnia and Herzegovina": "🇧🇦",
-    "Montenegro": "🇲🇪",
-    "North Macedonia": "🇲🇰",
-    "Chile": "🇨🇱",
-    "Uruguay": "🇺🇾",
+    "Albánsko": "🇦🇱",
+    "Bosna a Hercegovina": "🇧🇦",
+    "Čierna Hora": "🇲🇪",
+    "Severné Macedónsko": "🇲🇰",
+    "Čile": "🇨🇱",
+    "Uruguaj": "🇺🇾",
     "Venezuela": "🇻🇪",
-    "Ecuador": "🇪🇨",
-    "Bolivia": "🇧🇴",
-    "Puerto Rico": "🇵🇷",
+    "Ekvádor": "🇪🇨",
+    "Bolívia": "🇧🇴",
+    "Portoriko": "🇵🇷",
     "Pakistan": "🇵🇰",
-    "Nigeria": "🇳🇬",
+    "Nigéria": "🇳🇬",
     "Benin": "🇧🇯",
     "Eritrea": "🇪🇷",
     "Guinea-Bissau": "🇬🇼",
-    "Madagascar": "🇲🇬",
+    "Madagaskar": "🇲🇬",
     "Haiti": "🇭🇹",
-    "Lebanon": "🇱🇧",
-    "Neutral Athletes": "🏳️",
+    "Libanon": "🇱🇧",
+    "Neutrálni športovci": "🏳️",
 }
 
 # =========================
-# 1) Režim + načítanie dát
+# Režim + načítanie dát
 # =========================
 st.sidebar.header("⚙️ Nastavenia")
 mode = st.sidebar.radio("Režim:", ["Celkové medaily", "TOP 10 podľa športov"])
@@ -231,210 +135,127 @@ else:
 
     sports_en = sorted(sport_data["sport"].unique().tolist())
     sports_sk = [sport_translation.get(s.lower(), s) for s in sports_en]
-    selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
 
+    selected_sport_sk = st.sidebar.selectbox("Vyber šport:", sports_sk)
     selected_sport = reverse_sport_translation.get(selected_sport_sk, selected_sport_sk).lower()
+
     data = sport_data[sport_data["sport"].str.lower() == selected_sport].copy()
 
 # =========================
-# 2) Doplnkové údaje
+# Doplnkové údaje
 # population = počet obyvateľov
 # sport_invest = približné ročné investície do športu v mil. €
 # =========================
 extra = {
-    "United States": {"population": 331_000_000, "sport_invest": 30_000},
-    "China": {"population": 1_440_000_000, "sport_invest": 16_000},
-    "Slovakia": {"population": 5_450_000, "sport_invest": 80},
-    "Norway": {"population": 5_400_000, "sport_invest": 1_200},
-    "Italy": {"population": 59_000_000, "sport_invest": 1_500},
-    "Germany": {"population": 83_000_000, "sport_invest": 2_500},
-    "Japan": {"population": 125_800_000, "sport_invest": 2_000},
-    "France": {"population": 67_000_000, "sport_invest": 2_200},
-    "Switzerland": {"population": 8_700_000, "sport_invest": 900},
-    "Canada": {"population": 38_000_000, "sport_invest": 1_800},
-    "Netherlands": {"population": 17_400_000, "sport_invest": 800},
-    "Sweden": {"population": 10_400_000, "sport_invest": 700},
-    "Austria": {"population": 8_900_000, "sport_invest": 600},
-    "South Korea": {"population": 52_000_000, "sport_invest": 1_000},
-    "Australia": {"population": 26_000_000, "sport_invest": 1_200},
-    "Finland": {"population": 5_500_000, "sport_invest": 400},
-    "Czechia": {"population": 10_700_000, "sport_invest": 350},
-    "Great Britain": {"population": 67_000_000, "sport_invest": 2_500},
-    "Slovenia": {"population": 2_100_000, "sport_invest": 150},
-    "Spain": {"population": 47_000_000, "sport_invest": 900},
-    "Brazil": {"population": 213_000_000, "sport_invest": 2_000},
-    "Kazakhstan": {"population": 19_000_000, "sport_invest": 300},
+    "Spojené štáty": {"population": 331_000_000, "sport_invest": 30_000},
+    "Čína": {"population": 1_440_000_000, "sport_invest": 16_000},
+    "Slovensko": {"population": 5_450_000, "sport_invest": 80},
+    "Nórsko": {"population": 5_400_000, "sport_invest": 1_200},
+    "Taliansko": {"population": 59_000_000, "sport_invest": 1_500},
+    "Nemecko": {"population": 83_000_000, "sport_invest": 2_500},
+    "Japonsko": {"population": 125_800_000, "sport_invest": 2_000},
+    "Francúzsko": {"population": 67_000_000, "sport_invest": 2_200},
+    "Švajčiarsko": {"population": 8_700_000, "sport_invest": 900},
+    "Kanada": {"population": 38_000_000, "sport_invest": 1_800},
+    "Holandsko": {"population": 17_400_000, "sport_invest": 800},
+    "Švédsko": {"population": 10_400_000, "sport_invest": 700},
+    "Rakúsko": {"population": 8_900_000, "sport_invest": 600},
+    "Južná Kórea": {"population": 52_000_000, "sport_invest": 1_000},
+    "Austrália": {"population": 26_000_000, "sport_invest": 1_200},
+    "Fínsko": {"population": 5_500_000, "sport_invest": 400},
+    "Česko": {"population": 10_700_000, "sport_invest": 350},
+    "Veľká Británia": {"population": 67_000_000, "sport_invest": 2_500},
+    "Slovinsko": {"population": 2_100_000, "sport_invest": 150},
+    "Španielsko": {"population": 47_000_000, "sport_invest": 900},
+    "Brazília": {"population": 213_000_000, "sport_invest": 2_000},
+    "Kazachstan": {"population": 19_000_000, "sport_invest": 300},
 
-    "Argentina": {"population": 45_800_000, "sport_invest": 180},
-    "Bulgaria": {"population": 6_400_000, "sport_invest": 95},
-    "Belgium": {"population": 11_800_000, "sport_invest": 420},
-    "Denmark": {"population": 6_000_000, "sport_invest": 300},
-    "Estonia": {"population": 1_370_000, "sport_invest": 70},
-    "Latvia": {"population": 1_870_000, "sport_invest": 75},
-    "Poland": {"population": 37_500_000, "sport_invest": 320},
-    "Georgia": {"population": 3_700_000, "sport_invest": 85},
-    "New Zealand": {"population": 5_300_000, "sport_invest": 300},
-    "Hungary": {"population": 9_600_000, "sport_invest": 260},
-    "Portugal": {"population": 10_400_000, "sport_invest": 150},
-    "Romania": {"population": 19_000_000, "sport_invest": 170},
-    "Croatia": {"population": 3_900_000, "sport_invest": 95},
-    "Serbia": {"population": 6_600_000, "sport_invest": 110},
-    "Ukraine": {"population": 37_000_000, "sport_invest": 140},
-    "Turkey": {"population": 86_000_000, "sport_invest": 300},
-    "Greece": {"population": 10_400_000, "sport_invest": 250},
-    "Ireland": {"population": 5_300_000, "sport_invest": 170},
-    "Lithuania": {"population": 2_900_000, "sport_invest": 85},
-    "Luxembourg": {"population": 680_000, "sport_invest": 40},
-    "Israel": {"population": 9_900_000, "sport_invest": 240},
+    "Argentína": {"population": 45_800_000, "sport_invest": 180},
+    "Bulharsko": {"population": 6_400_000, "sport_invest": 95},
+    "Belgicko": {"population": 11_800_000, "sport_invest": 420},
+    "Dánsko": {"population": 6_000_000, "sport_invest": 300},
+    "Estónsko": {"population": 1_370_000, "sport_invest": 70},
+    "Lotyšsko": {"population": 1_870_000, "sport_invest": 75},
+    "Poľsko": {"population": 37_500_000, "sport_invest": 320},
+    "Gruzínsko": {"population": 3_700_000, "sport_invest": 85},
+    "Nový Zéland": {"population": 5_300_000, "sport_invest": 300},
+    "Maďarsko": {"population": 9_600_000, "sport_invest": 260},
+    "Portugalsko": {"population": 10_400_000, "sport_invest": 150},
+    "Rumunsko": {"population": 19_000_000, "sport_invest": 170},
+    "Chorvátsko": {"population": 3_900_000, "sport_invest": 95},
+    "Srbsko": {"population": 6_600_000, "sport_invest": 110},
+    "Ukrajina": {"population": 37_000_000, "sport_invest": 140},
+    "Turecko": {"population": 86_000_000, "sport_invest": 300},
+    "Grécko": {"population": 10_400_000, "sport_invest": 250},
+    "Írsko": {"population": 5_300_000, "sport_invest": 170},
+    "Litva": {"population": 2_900_000, "sport_invest": 85},
+    "Luxembursko": {"population": 680_000, "sport_invest": 40},
+    "Izrael": {"population": 9_900_000, "sport_invest": 240},
     "India": {"population": 1_430_000_000, "sport_invest": 900},
-    "Iran": {"population": 89_000_000, "sport_invest": 220},
-    "Mexico": {"population": 129_000_000, "sport_invest": 260},
-    "Colombia": {"population": 53_000_000, "sport_invest": 130},
-    "South Africa": {"population": 63_000_000, "sport_invest": 180},
-    "Kenya": {"population": 55_000_000, "sport_invest": 90},
-    "Jamaica": {"population": 2_800_000, "sport_invest": 65},
-    "Thailand": {"population": 71_000_000, "sport_invest": 140},
-    "Malaysia": {"population": 35_000_000, "sport_invest": 150},
-    "Singapore": {"population": 6_000_000, "sport_invest": 260},
-    "Philippines": {"population": 115_000_000, "sport_invest": 120},
-    "Hong Kong": {"population": 7_500_000, "sport_invest": 180},
-    "Chinese Taipei": {"population": 23_500_000, "sport_invest": 260},
-    "Saudi Arabia": {"population": 38_000_000, "sport_invest": 350},
-    "United Arab Emirates": {"population": 10_200_000, "sport_invest": 280},
+    "Irán": {"population": 89_000_000, "sport_invest": 220},
+    "Mexiko": {"population": 129_000_000, "sport_invest": 260},
+    "Kolumbia": {"population": 53_000_000, "sport_invest": 130},
+    "Južná Afrika": {"population": 63_000_000, "sport_invest": 180},
+    "Keňa": {"population": 55_000_000, "sport_invest": 90},
+    "Jamajka": {"population": 2_800_000, "sport_invest": 65},
+    "Thajsko": {"population": 71_000_000, "sport_invest": 140},
+    "Malajzia": {"population": 35_000_000, "sport_invest": 150},
+    "Singapur": {"population": 6_000_000, "sport_invest": 260},
+    "Filipíny": {"population": 115_000_000, "sport_invest": 120},
+    "Hongkong": {"population": 7_500_000, "sport_invest": 180},
+    "Čínsky Tchaj-pej": {"population": 23_500_000, "sport_invest": 260},
+    "Saudská Arábia": {"population": 38_000_000, "sport_invest": 350},
+    "Spojené arabské emiráty": {"population": 10_200_000, "sport_invest": 280},
     "Uzbekistan": {"population": 37_000_000, "sport_invest": 110},
-    "Mongolia": {"population": 3_500_000, "sport_invest": 30},
-    "Armenia": {"population": 2_800_000, "sport_invest": 40},
-    "Azerbaijan": {"population": 10_400_000, "sport_invest": 110},
-    "Kyrgyzstan": {"population": 7_200_000, "sport_invest": 22},
-    "Moldova": {"population": 2_500_000, "sport_invest": 20},
+    "Mongolsko": {"population": 3_500_000, "sport_invest": 30},
+    "Arménsko": {"population": 2_800_000, "sport_invest": 40},
+    "Azerbajdžan": {"population": 10_400_000, "sport_invest": 110},
+    "Kirgizsko": {"population": 7_200_000, "sport_invest": 22},
+    "Moldavsko": {"population": 2_500_000, "sport_invest": 20},
     "Kosovo": {"population": 1_600_000, "sport_invest": 18},
     "Cyprus": {"population": 1_300_000, "sport_invest": 30},
     "Malta": {"population": 560_000, "sport_invest": 18},
-    "Iceland": {"population": 390_000, "sport_invest": 45},
-    "Liechtenstein": {"population": 40_000, "sport_invest": 10},
-    "Monaco": {"population": 39_000, "sport_invest": 22},
-    "San Marino": {"population": 34_000, "sport_invest": 5},
+    "Island": {"population": 390_000, "sport_invest": 45},
+    "Lichtenštajnsko": {"population": 40_000, "sport_invest": 10},
+    "Monako": {"population": 39_000, "sport_invest": 22},
+    "San Maríno": {"population": 34_000, "sport_invest": 5},
     "Andorra": {"population": 82_000, "sport_invest": 12},
-    "Albania": {"population": 2_800_000, "sport_invest": 35},
-    "Bosnia and Herzegovina": {"population": 3_200_000, "sport_invest": 28},
-    "Montenegro": {"population": 620_000, "sport_invest": 20},
-    "North Macedonia": {"population": 1_820_000, "sport_invest": 15},
-    "Chile": {"population": 19_700_000, "sport_invest": 90},
-    "Uruguay": {"population": 3_400_000, "sport_invest": 55},
+    "Albánsko": {"population": 2_800_000, "sport_invest": 35},
+    "Bosna a Hercegovina": {"population": 3_200_000, "sport_invest": 28},
+    "Čierna Hora": {"population": 620_000, "sport_invest": 20},
+    "Severné Macedónsko": {"population": 1_820_000, "sport_invest": 15},
+    "Čile": {"population": 19_700_000, "sport_invest": 90},
+    "Uruguaj": {"population": 3_400_000, "sport_invest": 55},
     "Venezuela": {"population": 28_500_000, "sport_invest": 65},
-    "Ecuador": {"population": 18_400_000, "sport_invest": 55},
-    "Bolivia": {"population": 12_500_000, "sport_invest": 22},
-    "Puerto Rico": {"population": 3_200_000, "sport_invest": 55},
+    "Ekvádor": {"population": 18_400_000, "sport_invest": 55},
+    "Bolívia": {"population": 12_500_000, "sport_invest": 22},
+    "Portoriko": {"population": 3_200_000, "sport_invest": 55},
     "Pakistan": {"population": 247_000_000, "sport_invest": 60},
-    "Nigeria": {"population": 229_000_000, "sport_invest": 140},
+    "Nigéria": {"population": 229_000_000, "sport_invest": 140},
     "Benin": {"population": 14_000_000, "sport_invest": 18},
     "Eritrea": {"population": 3_700_000, "sport_invest": 8},
     "Guinea-Bissau": {"population": 2_200_000, "sport_invest": 4},
-    "Madagascar": {"population": 31_000_000, "sport_invest": 15},
+    "Madagaskar": {"population": 31_000_000, "sport_invest": 15},
     "Haiti": {"population": 11_700_000, "sport_invest": 8},
-    "Lebanon": {"population": 5_500_000, "sport_invest": 25},
-    "Neutral Athletes": {"population": None, "sport_invest": None},
+    "Libanon": {"population": 5_500_000, "sport_invest": 25},
+    "Neutrálni športovci": {"population": None, "sport_invest": None},
 }
 
 USD_TO_EUR = 0.92
 for c in extra:
-    if "sport_invest" in extra[c] and extra[c]["sport_invest"] is not None:
+    if extra[c]["sport_invest"] is not None:
         extra[c]["sport_invest"] = extra[c]["sport_invest"] * USD_TO_EUR
 
 # =========================
-# 2A) Slovenské názvy z CSV -> EN názvy kľúčov
-# =========================
-country_name_aliases = {
-    "Spojené štáty": "United States",
-    "Čína": "China",
-    "Slovensko": "Slovakia",
-    "Nórsko": "Norway",
-    "Taliansko": "Italy",
-    "Nemecko": "Germany",
-    "Japonsko": "Japan",
-    "Francúzsko": "France",
-    "Švajčiarsko": "Switzerland",
-    "Kanada": "Canada",
-    "Holandsko": "Netherlands",
-    "Švédsko": "Sweden",
-    "Rakúsko": "Austria",
-    "Južná Kórea": "South Korea",
-    "Austrália": "Australia",
-    "Fínsko": "Finland",
-    "Česko": "Czechia",
-    "Veľká Británia": "Great Britain",
-    "Slovinsko": "Slovenia",
-    "Španielsko": "Spain",
-    "Brazília": "Brazil",
-    "Kazachstan": "Kazakhstan",
-    "Argentína": "Argentina",
-    "Bulharsko": "Bulgaria",
-    "Belgicko": "Belgium",
-    "Dánsko": "Denmark",
-    "Estónsko": "Estonia",
-    "Lotyšsko": "Latvia",
-    "Poľsko": "Poland",
-    "Gruzínsko": "Georgia",
-    "Nový Zéland": "New Zealand",
-    "Maďarsko": "Hungary",
-    "Portugalsko": "Portugal",
-    "Rumunsko": "Romania",
-    "Chorvátsko": "Croatia",
-    "Srbsko": "Serbia",
-    "Ukrajina": "Ukraine",
-    "Turecko": "Turkey",
-    "Grécko": "Greece",
-    "Írsko": "Ireland",
-    "Litva": "Lithuania",
-    "Luxembursko": "Luxembourg",
-    "Izrael": "Israel",
-    "India": "India",
-    "Irán": "Iran",
-    "Mexiko": "Mexico",
-    "Kolumbia": "Colombia",
-    "Južná Afrika": "South Africa",
-    "Keňa": "Kenya",
-    "Jamajka": "Jamaica",
-    "Thajsko": "Thailand",
-    "Malajzia": "Malaysia",
-    "Singapur": "Singapore",
-    "Filipíny": "Philippines",
-    "Hongkong": "Hong Kong",
-    "Čínsky Tchaj-pej": "Chinese Taipei",
-    "Saudská Arábia": "Saudi Arabia",
-    "Spojené arabské emiráty": "United Arab Emirates",
-    "Mongolsko": "Mongolia",
-    "Arménsko": "Armenia",
-    "Azerbajdžan": "Azerbaijan",
-    "Kirgizsko": "Kyrgyzstan",
-    "Moldavsko": "Moldova",
-    "Čierna Hora": "Montenegro",
-    "Severné Macedónsko": "North Macedonia",
-    "Čile": "Chile",
-    "Uruguaj": "Uruguay",
-    "Venezuela": "Venezuela",
-    "Ekvádor": "Ecuador",
-    "Bolívia": "Bolivia",
-    "Portoriko": "Puerto Rico",
-    "Nigéria": "Nigeria",
-    "Madagaskar": "Madagascar",
-    "Libanon": "Lebanon",
-    "Neutrálni športovci": "Neutral Athletes",
-}
-
-data["country"] = data["country"].replace(country_name_aliases)
-
-# =========================
-# 3) Doplň stĺpce population + sport_invest + SK názvy + vlajky
+# Doplnenie údajov do dataframe
 # =========================
 data["population"] = data["country"].map(lambda c: extra.get(c, {}).get("population"))
 data["sport_invest"] = data["country"].map(lambda c: extra.get(c, {}).get("sport_invest"))
-data["country_sk"] = data["country"].map(lambda c: country_translation.get(c, c))
 data["flag"] = data["country"].map(lambda c: country_flags.get(c, "🏳️"))
-data["country_label"] = data["flag"] + " " + data["country_sk"]
+data["country_label"] = data["flag"] + " " + data["country"]
 
 # =========================
-# 4) Výpočty
+# Výpočty metrík
 # =========================
 data["points"] = data["gold"] * 3 + data["silver"] * 2 + data["bronze"]
 data["medals_per_million"] = data["total"] / (data["population"] / 1_000_000)
@@ -449,14 +270,13 @@ data.loc[
 ] = None
 
 # =========================
-# 5) UI – výber krajín + typ grafu
+# Výber krajín + typ grafu
 # =========================
 all_country_labels = sorted(data["country_label"].unique().tolist())
 
-default_en = ["United States", "China", "Slovakia"]
 default_labels = []
-for c in default_en:
-    row = data[data["country"] == c]
+for country in ["Spojené štáty", "Čína", "Slovensko"]:
+    row = data[data["country"] == country]
     if not row.empty:
         default_labels.append(row.iloc[0]["country_label"])
 
@@ -478,7 +298,7 @@ if not chosen_labels:
 filtered = data[data["country_label"].isin(chosen_labels)].copy()
 
 # =========================
-# 6) UI – výber metriky
+# Výber metriky
 # =========================
 metric = st.sidebar.selectbox(
     "Vyber metriku porovnania:",
@@ -492,7 +312,7 @@ metric = st.sidebar.selectbox(
 )
 
 # =========================
-# 7) Príprava + dropna podľa metriky
+# Dropna podľa metriky
 # =========================
 if metric == " Počet medailí (spolu)":
     pass
@@ -506,11 +326,11 @@ else:
     filtered = filtered.dropna(subset=["investment_per_medal"])
 
 if filtered.empty:
-    st.warning("Pre zvolenú metriku nemajú vybrané krajiny potrebné údaje (populácia/investície).")
+    st.warning("Pre zvolenú metriku nemajú vybrané krajiny potrebné údaje.")
     st.stop()
 
 # =========================
-# 8) Graf + Top N
+# Graf + Top N
 # =========================
 st.subheader(" Graf")
 
@@ -544,6 +364,9 @@ chart_df = chart_df.head(top_n)
 
 fig, ax = plt.subplots(figsize=(10, 5))
 
+# =========================
+# Graf: medaily spolu
+# =========================
 if metric == " Počet medailí (spolu)":
     if chart_type == "Skladaný ( spolu)":
         ax.bar(chart_df["country_label"], chart_df["gold"], label=" Zlaté", color="#FFD700")
@@ -595,6 +418,9 @@ if metric == " Počet medailí (spolu)":
 
     ax.set_ylabel("Počet medailí", fontsize=11)
 
+# =========================
+# Graf: ostatné metriky
+# =========================
 else:
     if metric == "⭐ Body (3-2-1)":
         y = chart_df["points"]
@@ -623,6 +449,9 @@ else:
     for i, val in enumerate(y.tolist()):
         ax.text(i, float(val) + pad, fmt.format(float(val)), ha="center", va="bottom", fontsize=9)
 
+# =========================
+# Štýl grafu
+# =========================
 ax.set_axisbelow(True)
 ax.yaxis.grid(True, alpha=0.25)
 ax.spines["top"].set_visible(False)
@@ -632,16 +461,17 @@ if metric == " Počet medailí (spolu)":
     ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.12))
 
 ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
 plt.tight_layout()
 st.pyplot(fig)
 
 # =========================
-# 9) Tabuľka výsledkov
+# Tabuľka výsledkov
 # =========================
 st.subheader(" Analytická tabuľka")
 
 table_df = chart_df.copy()
-table_df = table_df.drop(columns=["country", "country_sk", "flag"], errors="ignore").rename(columns={"country_label": "Krajina"})
+table_df = table_df.drop(columns=["country", "flag"], errors="ignore").rename(columns={"country_label": "Krajina"})
 
 rename_columns = {
     "gold": " Zlaté medaily",
